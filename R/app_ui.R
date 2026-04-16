@@ -1,0 +1,144 @@
+#' The application User-Interface
+#'
+#' @param request Internal parameter for `{shiny}`.
+#'     DO NOT REMOVE.
+#' @import shiny
+#' @importFrom bs4Dash bs4Badge bs4DashSidebar bs4DashNavbar bs4DashPage sidebarMenu menuItem menuSubItem dashboardBody tabItems tabItem box dashboardFooter
+#' @importFrom shinydisconnect disconnectMessage
+#' @import shinyWidgets
+#'
+#' @noRd
+app_ui <- function(request) {
+  tagList(
+    # Leave this function for adding external resources
+    golem_add_external_resources(),
+    # Your application UI logic
+    bs4DashPage(
+      skin = "black",
+      bs4DashNavbar(
+        title = tagList(
+          tags$img(src = 'www/GenoBrew_logo.png', height = '40', width = '50'),
+        ),
+        rightUi = tags$li(
+          class = "dropdown",
+          tags$a(
+            href = "#",
+            class = "nav-link",
+            `data-toggle` = "dropdown",
+            icon("info-circle")
+          ),
+          tags$div(
+            class = "dropdown-menu dropdown-menu-right",
+            tags$a(
+              class = "dropdown-item",
+              href = "#",
+              "Session Info",
+              onclick = "Shiny.setInputValue('session_info_button', Math.random())"
+            ),
+            tags$a(
+              class = "dropdown-item",
+              href = "#",
+              "Check for Updates",
+              onclick = "Shiny.setInputValue('updates_info_button', Math.random())"
+            )
+          )
+        )
+      ),
+      help = NULL, #This is the default bs4Dash button to control the presence of tooltips and popovers, which can be added as a user help/info feature.
+      bs4DashSidebar(
+        skin="light",
+        status = "warning", #Chose a color that you prefer here
+        fixed=TRUE,
+        #minified = F,
+        expandOnHover = TRUE,
+        sidebarMenu(id = "MainMenu",
+                    flat = FALSE,
+                    tags$li(class = "header", style = "color: grey; margin-top: 10px; margin-bottom: 10px; padding-left: 15px;", "Menu"),
+                    menuItem("Home", tabName = "welcome", icon = icon("house"),startExpanded = FALSE),
+                    menuItem("Select Markers", tabName = "mk_select", icon = icon("magnifying-glass"),startExpanded = FALSE),
+                    menuItem("CNV profiles", tabName = "cnv", icon = icon("dna")),
+                    tags$li(class = "header", style = "color: grey; margin-top: 18px; margin-bottom: 10px; padding-left: 15px;", "Information"),
+                    menuItem("Source Code", icon = icon("circle-info"), href = "https://www.github.com/Breeding-Insight/GenoBrew"),
+                    menuItem("Help", tabName = "help", icon = icon("circle-question"))
+        )
+      ),
+      footer = dashboardFooter(
+        right = div(
+          style = "display: flex; align-items: center;",  # Align text and images horizontally
+          div(
+            style = "display: flex; flex-direction: column; margin-right: 15px; text-align: right;",
+            div("2026 Breeding Insight"),
+            div("Funded by USDA through (UF|IFAS)")
+          ),
+          div(
+            a(
+              img(src = "www/usda-logo-color.png", height = "45px"),
+              style = "margin-right: 15px;"
+            ),
+            a(
+              img(src = "www/cornell_seal_simple_web_b31b1b.png", height = "45px")
+            )
+          )
+        ),
+        left = div(
+          style = "display: flex; align-items: center; height: 100%;",  
+          sprintf("v%s", as.character(utils::packageVersion("familia")))
+        )
+      ),
+      dashboardBody(
+        disconnectMessage(), #Adds generic error message for any error if not already accounted for
+        tabItems(
+          tabItem(
+            tabName = "welcome", mod_Home_ui("Home_1")
+          ),
+          tabItem(
+            tabName = "mk_select", mod_mk_select_ui("mk_select_1")
+          ),
+          tabItem(
+            tabName = "cnv", mod_cnv_ui("cnv_1")
+          ),
+          tabItem(
+            tabName = "help", mod_help_ui("help_1")
+          )
+        )
+      )
+    )
+  )
+}
+
+#' Add external Resources to the Application
+#'
+#' This function is internally used to add external
+#' resources inside the Shiny application.
+#'
+#' @import shiny
+#' @importFrom golem add_resource_path activate_js favicon bundle_resources
+#' @noRd
+golem_add_external_resources <- function() {
+  add_resource_path(
+    "www",
+    app_sys("app/www")
+  )
+  
+  tags$head(
+    favicon(),
+    bundle_resources(
+      path = app_sys("app/www"),
+      app_title = "GenoBrew"
+    ),
+    # Add here other external resources
+    # for example, you can add shinyalert::useShinyalert()
+    tags$script(HTML("
+      $(document).ready(function() {
+        // On page load: mirror active class from <li> onto <a> for CSS targeting
+        $('#cnv_1-sample_select_tabs li.active > a').addClass('active');
+
+        // After each tab switch (content already swapped): sync active on <a> only
+        $(document).on('shown.bs.tab', '#cnv_1-sample_select_tabs a[data-toggle=\"tab\"]', function(e) {
+          $('#cnv_1-sample_select_tabs a[data-toggle=\"tab\"]').removeClass('active');
+          $(e.target).addClass('active');
+        });
+      });
+    "))
+  )
+}
