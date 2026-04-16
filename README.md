@@ -16,7 +16,7 @@ includes built-in datasets for *Coffea arabica* genomic data exploration
 and analysis, designed to support breeders and researchers without
 requiring command-line expertise.
 
-## Key Features
+### Key Features
 
 - **Web-Based Interface:** Run analyses directly in the browser — no
   command-line required.
@@ -36,9 +36,9 @@ requiring command-line expertise.
 - **Upload your own data:** Accepts VCF and CNV files in CSV/TSV/GZ
   formats alongside a custom marker panel CSV.
 
-## Modules
+### Modules
 
-### Select Markers
+#### Select Markers
 
 Loads a VCF file (or built-in WGS dataset) and a marker panel, then
 computes and displays:
@@ -51,7 +51,7 @@ computes and displays:
 - Genomic relationship plots
 
 
-### CNV Profiles
+#### CNV Profiles
 
 Loads a CNV file (or built-in dataset) and visualizes:
 
@@ -59,9 +59,9 @@ Loads a CNV file (or built-in dataset) and visualizes:
 - BAF, zscore and CNV calls plots for single sample
 - Pairwise IBD plots
 
-## Getting Started
+### Getting Started
 
-### Local Installation
+#### Local Installation
 
 1. **Install R** (≥ 3.6.0) from [CRAN](https://cran.r-project.org/).
 
@@ -80,7 +80,7 @@ GenoBrew::run_app()
 
 4. The GenoBrew interface will open in your default web browser.
 
-## Funding
+### Funding
 
 GenoBrew development is supported by
 [Breeding Insight](https://www.breedinginsight.org/), a USDA-funded
