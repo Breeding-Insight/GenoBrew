@@ -216,6 +216,24 @@ mod_mk_select_ui <- function(id){
                    )
                  ), hr(),
                  fluidRow(
+                   column(width = 6,
+                          uiOutput(ns("ui_filter_depth")),
+                          helpText("Only markers whose mean read depth falls within the selected range will be kept.")
+                   ),
+                   column(width = 6,
+                          tags$label(HTML("Avoid Repeated Regions <small style='color:grey;font-weight:normal'>(exclude markers in repetitive genomic regions)</small>")),
+                          shinyWidgets::prettyRadioButtons(
+                            ns("filter_repeated"),
+                            label   = NULL,
+                            choices = c("TRUE", "FALSE"),
+                            selected = "FALSE",
+                            inline  = TRUE,
+                            status  = "info"
+                          ),
+                          helpText("TRUE = exclude markers flagged as repeated regions; FALSE = keep all.")
+                   )
+                 ), hr(),
+                 fluidRow(
                    column(width = 12,
                           tags$label(HTML("Samples to include <small style='color:grey;font-weight:normal'>(all selected by default)</small>")),
                           shinyWidgets::pickerInput(
@@ -387,6 +405,26 @@ mod_mk_select_server <- function(input, output, session, parent_session){
   })
   
   
+  # --- Depth slider: update range from data ---
+  output$ui_filter_depth <- renderUI({
+    depth_col <- NULL
+    if (!is.null(mk_select_items$snp_stats)) {
+      candidates <- grep("depth|DP|mean_dp", colnames(mk_select_items$snp_stats),
+                         ignore.case = TRUE, value = TRUE)
+      if (length(candidates) > 0) depth_col <- mk_select_items$snp_stats[[candidates[1]]]
+    }
+    if (!is.null(depth_col) && length(depth_col) > 0) {
+      d_min <- floor(min(depth_col, na.rm = TRUE))
+      d_max <- ceiling(max(depth_col, na.rm = TRUE))
+    } else {
+      d_min <- 0
+      d_max <- 500
+    }
+    sliderInput(ns("filter_depth"),
+                label = HTML("Mean Depth Range <small style='color:grey;font-weight:normal'>(keep markers with mean depth within this range)</small>"),
+                min = d_min, max = d_max, value = c(d_min, d_max), step = 1, width = "70%")
+  })
+
   # --- Update sample picker when dataset or VCF changes ---
 
   # Sample lists for built-in datasets (replace with real sample names when available)

@@ -128,6 +128,13 @@ golem_add_external_resources <- function() {
     ),
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
+    tags$style(HTML("
+      /* Ensure box collapse/expand buttons are always on top */
+      .card-tools { position: relative; z-index: 10; }
+      /* Make collapse/expand icons visible on white box headers */
+      .card-tools .btn-tool { color: #495057 !important; }
+      .card-tools .btn-tool:hover { color: #212529 !important; }
+    ")),
     tags$script(HTML("
       $(document).ready(function() {
         // On page load: mirror active class from <li> onto <a> for CSS targeting

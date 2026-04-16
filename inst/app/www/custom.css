@@ -30,6 +30,12 @@
   color: #343a40 !important;
 }
 
+/* ── Ensure box collapse/expand buttons are always visible ── */
+.card-tools {
+  position: relative;
+  z-index: 10;
+}
+
 /* ── Dashboard footer ── */
 .main-footer {
   background-color: white;

@@ -30,8 +30,8 @@ mod_Home_ui <- function(id){
                                 <img src='www/GenoBrew_logo.png' alt='GenoBrew' style='width: 120px; height: 120px;'>
                               </div>",
                             paste0(
-                              "<p>GenoBrew is a user-friendly interface for <b>Coffee Arabica</b> genomic data ",
-                              "exploration and analysis</p>",
+                              "<p>An user-friendly Shiny interface for measuring marker panel efficiency according to previous datasets and visualizing CNV profiles.
+                              It has built-in datasets for <b>Coffee Arabica</b> genomic data exploration and analysis.</p>",
                               "<p>This application provides two main modules:</p>",
                               "<ul>",
                               "  <li><b>Select Markers:</b> Compare marker statistics derived from whole-genome ",

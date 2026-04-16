@@ -6,135 +6,96 @@ editor_options:
 
 # GenoBrew
 
-R shiny application template for BI. Using this template ensures that
-the application is compatible with the Breedverse and follows internal
-coding best practices. Adapt for your specific application. We highlight
-the miniumum expected sections, but you are welcome to add additional
-sections for your specific application
-
---
-
 <!-- badges: start -->
 
-{Add badges for your application, see img.shields.io for more examples}
-
-[![R-CMD-check](https://github.com/Breeding-Insight/BIGapp/workflows/R-CMD-check/badge.svg)](https://github.com/Breeding-Insight/BIGapp/actions)
-[![Development
-Status](https://img.shields.io/badge/development-active-blue.svg)](https://img.shields.io/badge/development-active-blue.svg)
-![GitHub
-License](https://img.shields.io/github/license/Breeding-Insight/GenoBrew)
+[![R-CMD-check](https://github.com/Breeding-Insight/GenoBrew/workflows/R-CMD-check/badge.svg)](https://github.com/Breeding-Insight/GenoBrew/actions)
+[![Development Status](https://img.shields.io/badge/development-active-blue.svg)](https://img.shields.io/badge/development-active-blue.svg)
+![GitHub License](https://img.shields.io/github/license/Breeding-Insight/GenoBrew)
 
 <!-- badges: end -->
 
-::: {align="center"}
-# GenoBrew
+<p align="center">
+  <img src="inst/app/www/GenoBrew_logo.png" alt="GenoBrew Logo" width="120"/>
+</p>
 
-:::
-
-{Short description of your application}
-
-{EXAMPLE APPLICATION NAME} is a user-friendly web application built with
-R and Shiny, designed to simplify the processing of low to mid-density
-genotyping data for both diploid and polyploid species. It provides a
-powerful and intuitive interface for researchers and breeders to analyze
-genomic data without requiring command-line expertise.
+**GenoBrew** is a user-friendly R Shiny application for measuring marker
+panel efficiency according to dataset, help users optmize markers selection, 
+perform basic relationship analysis, and visualization of copy number variation (CNV) profiles. It
+includes built-in datasets for *Coffea arabica* genomic data exploration
+and analysis, designed to support breeders and researchers without
+requiring command-line expertise.
 
 ## Key Features
 
-{Summarize the application here}
+- **Web-Based Interface:** Run analyses directly in the browser — no
+  command-line required.
+- **Select Markers module:** Compare marker statistics derived from
+  whole-genome sequencing (WGS) of 91 *C. arabica* samples + KO34
+  against the **40k MolBreeding Marker Panel**. Interactively filter
+  marker subsets based on MAF, missing data, heterozygosity, and CNV
+  thresholds.
+- **CNV Profiles module:** Explore interactive visualizations of copy
+  number variation profiles across 91 samples + KO34, with per-sample
+  and per-family filtering. Also visualize relationship statistics for families.
+- **Built-in datasets:** Three WGS *C. arabica* datasets ready to load
+  (Hawaii + KO34, Brazil + KO34, combined WGS + KO34).
+- **40k MolBreeding Panel:** Built-in marker panel based on the
+  *C. arabica* Red Bourbon reference genome
+  ([Scalabrin et al., 2024](https://doi.org/10.1038/s41588-024-01695-w)).
+- **Upload your own data:** Accepts VCF and CNV files in CSV/TSV/GZ
+  formats alongside a custom marker panel CSV.
 
--   **Web-Based Interface:** Access {EXAMPLE APPLICATION NAME} through
-    your web browser, eliminating the need for using command-line inputs
-    to perform genomic analysis.
--   **Genotype Processing:**
-    -   Call genotypes from read counts.
-    -   Filter SNPs based on various criteria.
-    -   Filter samples to ensure data quality.
+## Modules
 
-## User Interface
+### Select Markers
 
-<p align="center">
+Loads a VCF file (or built-in WGS dataset) and a marker panel, then
+computes and displays:
 
-<img src="https://github.com/user-attachments/assets/9a6984df-8116-403c-85c1-ba9600623940" alt="BIGapp Screenshot" width="800"/>
-<br> <em>{EXAMPLE APPLICATION NAME}'s intuitive interface makes genomic
-data analysis accessible to everyone.</em>
+- WGS marker count, panel marker count, common markers, and markers
+  passing filters
+- Interactive marker distribution plot
+- Filters: minimum MAF, maximum missing data, depth range, heterozygosity range,
+  maximum % CNV ≠ 2
+- Genomic relationship plots
 
-</p>
+
+### CNV Profiles
+
+Loads a CNV file (or built-in dataset) and visualizes:
+
+- Genome-wide CNV profiles for combined samples
+- BAF, zscore and CNV calls plots for single sample
+- Pairwise IBD plots
 
 ## Getting Started
 
-### Tutorials
-
-New to {EXAMPLE APPLICATION NAME}? Check out our comprehensive tutorial
-to guide you through the process: [BIGapp
-Tutorials](https://scribehow.com/page/BIGapp_Tutorials__FdLsY9ZxQsi6kgT9p-U2Zg)
-
-### Online Preview (Optional)
-
-Try out a live demo of {EXAMPLE APPLICATION NAME} here: [BIGapp
-Demo](https://big-demo.shinyapps.io/bigapp-main/)
-
 ### Local Installation
 
-1.  **Install R:** Download and install the latest version of R from
-    [CRAN](https://cran.r-project.org/).
+1. **Install R** (≥ 3.6.0) from [CRAN](https://cran.r-project.org/).
 
-2.  **Open Terminal (macOS/Linux) or R Console (Windows).**
+2. **Install GenoBrew:**
 
-3.  **Installation:** \`\`\`R if (!require("BiocManager", quietly =
-    TRUE)) install.packages("BiocManager") install.packages("remotes")
+```r
+if (!require("remotes", quietly = TRUE)) install.packages("remotes")
+remotes::install_github("Breeding-Insight/GenoBrew", dependencies = TRUE)
+```
 
-    BiocManager::install("Breeding-Insight/{EXAMPLE APPLICATION NAME}",
-    dependencies = TRUE) \`\`\`
+3. **Launch the app:**
 
-4.  **Starting {EXAMPLE APPLICATION NAME}:**
-    `R     {EXAMPLE APPLICATION NAME}::run_app()`
+```r
+GenoBrew::run_app()
+```
 
-5.  **Access in Browser:** The {EXAMPLE APPLICATION NAME} interface will
-    open in your default web browser.
-
-## Dependencies
-
-{EXAMPLE APPLICATION NAME} leverages a powerful suite of R packages:
-
-### Core R Packages
-
--   **R (\>= 4.4.0)**
-
-### Shiny Framework
-
--   [shiny](https://cran.r-project.org/web/packages/shiny/index.html):
-    Web application framework.
--   [shinyWidgets](https://cran.r-project.org/web/packages/shinyWidgets/index.html):
-    Custom input widgets.
--   [shinyalert](https://cran.r-project.org/web/packages/shinyalert/index.html):
-    Create elegant pop-up messages.
--   [shinyjs](https://cran.r-project.org/web/packages/shinyjs/index.html):
-    Enhance Shiny apps with JavaScript actions.
--   [shinydisconnect](https://cran.r-project.org/web/packages/shinydisconnect/index.html):
-    Handle user disconnections gracefully.
--   [shinycssloaders](https://cran.r-project.org/web/packages/shinycssloaders/index.html):
-    Add CSS loaders for visual feedback.
--   [bs4Dash](https://cran.r-project.org/web/packages/bs4Dash/index.html):
-    Bootstrap 4 dashboard components.
--   [DT](https://cran.r-project.org/web/packages/DT/index.html): Display
-    data tables with interactive features.
--   [config](https://cran.r-project.org/web/packages/config/index.html):
-    Manage environment-specific configurations.
-
-### Genetic Analysis [Example category, add R package categories and package links to section]
-
--   [BIGr](https://github.com/Breeding-Insight/BIGr): Breeding Insight's
-    core genomic analysis functions.
+4. The GenoBrew interface will open in your default web browser.
 
 ## Funding
 
-{EXAMPLE APPLICATION NAME} development is supported by [Breeding
-Insight](https://www.breedinginsight.org/), a USDA-funded initiative
-based at University of Florida - IFAS.
+GenoBrew development is supported by
+[Breeding Insight](https://www.breedinginsight.org/), a USDA-funded
+initiative hosted at the University of Florida – IFAS.
 
-## Citation
+## License
 
-If you use [EXAMPLE APPLICATION NAME] in your research, please cite:
-
-<paste citation information here>
+This project is licensed under the Apache-2.0 license. See
+[LICENSE](LICENSE) for details.
