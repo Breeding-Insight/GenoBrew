@@ -1,16 +1,13 @@
-# GenoBrew
-
 <!-- badges: start -->
-
 [![R-CMD-check](https://github.com/Breeding-Insight/GenoBrew/workflows/R-CMD-check/badge.svg)](https://github.com/Breeding-Insight/GenoBrew/actions)
+![GitHub Release](https://img.shields.io/github/v/release/Breeding-Insight/GenoBrew)
 [![Development Status](https://img.shields.io/badge/development-active-blue.svg)](https://img.shields.io/badge/development-active-blue.svg)
 ![GitHub License](https://img.shields.io/github/license/Breeding-Insight/GenoBrew)
+[![codecov](https://app.codecov.io/gh/Breeding-Insight/GenoBrew/graph/badge.svg?token=PJUZMRN1NF)](https://app.codecov.io/gh/Breeding-Insight/GenoBrew)
 
 <!-- badges: end -->
 
-<p align="center">
-  <img src="inst/app/www/GenoBrew_logo.png" alt="GenoBrew Logo" width="120"/>
-</p>
+# GenoBrew <img src="inst/app/www/GenoBrew_logo.png" align="right" width="250"/>
 
 **GenoBrew** is a user-friendly R Shiny application for measuring marker
 panel efficiency according to dataset, help users optmize markers selection, 
