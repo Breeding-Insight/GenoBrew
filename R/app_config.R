@@ -1,3 +1,8 @@
+# Tell data.table that this package is data.table-aware so that := and other
+# data.table operators work correctly inside Shiny's execution environment.
+# See vignette('datatable-importing') for details.
+.datatable.aware <- TRUE
+
 #' Access files in the current app
 #'
 #' NOTE: If you manually change your package name in the DESCRIPTION,
