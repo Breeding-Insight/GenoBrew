@@ -1,22 +1,13 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
-# GenoBrew
-
 <!-- badges: start -->
-
 [![R-CMD-check](https://github.com/Breeding-Insight/GenoBrew/workflows/R-CMD-check/badge.svg)](https://github.com/Breeding-Insight/GenoBrew/actions)
+![GitHub Release](https://img.shields.io/github/v/release/Breeding-Insight/GenoBrew)
 [![Development Status](https://img.shields.io/badge/development-active-blue.svg)](https://img.shields.io/badge/development-active-blue.svg)
 ![GitHub License](https://img.shields.io/github/license/Breeding-Insight/GenoBrew)
+[![codecov](https://app.codecov.io/gh/Breeding-Insight/GenoBrew/graph/badge.svg?token=PJUZMRN1NF)](https://app.codecov.io/gh/Breeding-Insight/GenoBrew)
 
 <!-- badges: end -->
 
-<p align="center">
-  <img src="inst/app/www/GenoBrew_logo.png" alt="GenoBrew Logo" width="120"/>
-</p>
+# GenoBrew <img src="inst/app/www/GenoBrew_logo.png" align="right" width="250"/>
 
 **GenoBrew** is a user-friendly R Shiny application for measuring marker
 panel efficiency according to dataset, help users optmize markers selection, 
@@ -25,7 +16,7 @@ includes built-in datasets for *Coffea arabica* genomic data exploration
 and analysis, designed to support breeders and researchers without
 requiring command-line expertise.
 
-## Key Features
+### Key Features
 
 - **Web-Based Interface:** Run analyses directly in the browser — no
   command-line required.
@@ -45,9 +36,9 @@ requiring command-line expertise.
 - **Upload your own data:** Accepts VCF and CNV files in CSV/TSV/GZ
   formats alongside a custom marker panel CSV.
 
-## Modules
+### Modules
 
-### Select Markers
+#### Select Markers
 
 Loads a VCF file (or built-in WGS dataset) and a marker panel, then
 computes and displays:
@@ -60,7 +51,7 @@ computes and displays:
 - Genomic relationship plots
 
 
-### CNV Profiles
+#### CNV Profiles
 
 Loads a CNV file (or built-in dataset) and visualizes:
 
@@ -68,9 +59,9 @@ Loads a CNV file (or built-in dataset) and visualizes:
 - BAF, zscore and CNV calls plots for single sample
 - Pairwise IBD plots
 
-## Getting Started
+### Getting Started
 
-### Local Installation
+#### Local Installation
 
 1. **Install R** (≥ 3.6.0) from [CRAN](https://cran.r-project.org/).
 
@@ -89,7 +80,7 @@ GenoBrew::run_app()
 
 4. The GenoBrew interface will open in your default web browser.
 
-## Funding
+### Funding
 
 GenoBrew development is supported by
 [Breeding Insight](https://www.breedinginsight.org/), a USDA-funded
