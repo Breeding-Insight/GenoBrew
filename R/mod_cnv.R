@@ -74,13 +74,8 @@ mod_cnv_ui <- function(id){
                                 ns("cnv_builtin_dataset"),
                                 label   = NULL,
                                 choices = c("-- Select a dataset --" = "",
-                                            "(WGS Brazil + KO34) U Panel" = "WGS_KO34_brazil",
-                                            "(WGS Hawaii + KO34) U Panel" = "WGS_KO34_hawaii",
-                                            "(WGS + KO34) U Panel"        = "WGS_KO34",
-                                            "(WGS Brazil + KO34) Optimized Filter" = "WGS_KO34_brazil_opt",
-                                            "(WGS Hawaii + KO34) Optimized Filter" = "WGS_KO34_hawaii_opt",
-                                            "(WGS + KO34) Optimized Filter"        = "WGS_KO34_opt"),
-                                selected = "WGS_KO34", width = "80%"
+                                            "Alfalfa F1 validation population" = "alfalfa_3k_f1"),
+                                selected = "alfalfa_3k_f1", width = "80%"
                               )
                        )
                      ),
@@ -116,8 +111,8 @@ mod_cnv_ui <- function(id){
                                 ns("cnv_builtin_passport"),
                                 label   = NULL,
                                 choices = c("-- Select a passport --" = "",
-                                            "WGS + KO34"        = "WGS_KO34"),
-                                selected = "WGS_KO34", width = "80%"
+                                            "Alfalfa F1 validation population" = "alfalfa_3k_f1"),
+                                selected = "alfalfa_3k_f1", width = "80%"
                               )
                        )
                      ),
@@ -145,120 +140,30 @@ mod_cnv_ui <- function(id){
                  # --- Progress bar ---
                  fluidRow(
                    column(width = 12,
-                          shinyWidgets::progressBar(id = ns("pb_cnv"), value = 0,
-                                                    title = "", display_pct = FALSE,
-                                                    status = "info", striped = TRUE)
+                          progressBar(id = ns("pb_cnv"), value = 0,
+                                      title = "", display_pct = FALSE,
+                                      status = "info", striped = TRUE)
                    )
                  ), hr(),
                  # --- Dataset info panels ---
                  fluidRow(
                    column(width = 12,
                           conditionalPanel(
-                            condition = sprintf("input['%s'] == 'WGS_KO34'", ns("cnv_builtin_dataset")),
+                            condition = sprintf("input['%s'] == 'alfalfa_3k'", ns("cnv_builtin_dataset")),
                             div(style = "border-left: 4px solid #6f42c1; background:#f8f9fa; border-radius:4px; padding: 12px 12px 12px 16px; margin-bottom:8px;",
                                 HTML(paste0(
-                                  "<h5><b>WGS + KO34</b></h5>",
-                                  "<p>Common markers between the 40K MolBreeding Marker Panel and the short reads whole-genome sequencing dataset comprising <b>all 91 <em>Coffea arabica</em> accessions</b> ",
-                                  "(Hawaii + Brazil collections), together with the publicly available HiFi and HiC <b>KO34</b>.</p>",
+                                  "<h5><b>Example Dataset: Alfalfa F1 Population</b></h5>",
+                                  "<p>This dataset includes F1 populations of alfalfa, validated using the Alfalfa 3k DArTag marker panel. It demonstrates the application of GenoBrew functionalities to diverse sequencing methods.</p>",
                                   "<ul>",
-                                  "  <li><b>Samples:</b> 91 accessions + KO34_hifi + KO34_hic (93 total)</li>",
-                                  "  <li><b>Origin:</b> USDA Hawaii (USA) + EMBRAPA (Brazil)</li>",
-                                  "  <li><b>Sequencing:</b> Illumina WGS, ~25&times; coverage + KO34 HiFi + KO34 HiC</li>",
-                                  "  <li><b>Sequencing data total markers (without filters):</b>  Illumina WGS (~7M); KO34 HiFi (~3M); KO34 HiC (~3M) </li>",
-                                  "  <li><b>Panel comparison:</b> Only Markers intersecting with the 40k MolBreeding Marker Panel</li>",
+                                  "  <li><b>Samples:</b> 183 progenies and 2 parents</li>",
+                                  "  <li><b>Source:</b> Zhao, D. (2023). \"A public mid-density genotyping platform for alfalfa (Medicago sativa L.)\". Genetic Resources, 4(8), pp. 55–63. <a href='https://doi.org/10.46265/genresj.EMOR6509' target='_blank'>DOI: 10.46265/genresj.EMOR6509</a>.</li>",
+                                  "  <li><b>Genotyping Method:</b> DArTag (mid-density genotyping platform)</li>",
+                                  "  <li><b>Total Markers:</b> 2,766 </li>",
+                                  "  <li><b>Panel Comparison:</b> Markers intersecting with the DArTag 3k Marker Panel</li>",
                                   "</ul>"
                                 ))
                             )
-                          ),
-                          conditionalPanel(
-                            condition = sprintf("input['%s'] == 'WGS_KO34_brazil'", ns("cnv_builtin_dataset")),
-                            div(style = "border-left: 4px solid #6f42c1; background:#f8f9fa; border-radius:4px; padding: 12px 12px 12px 16px; margin-bottom:8px;",
-                                HTML(paste0(
-                                  "<h5><b>WGS Brazil + KO34</b></h5>",
-                                  "<p>Common markers between the 40K MolBreeding Marker Panel and the short reads Whole-genome sequencing dataset comprising <b>23 <em>Coffea arabica</em> accessions</b> ",
-                                  "from the <b>Brazilian germplasm collection (Embrapa)</b>, together with the ",
-                                  "publicly available HiFi and HiC <b>KO34</b>.</p>",
-                                  "<ul>",
-                                  "  <li><b>Samples:</b> 22 accessions + KO34 HiFi + KO34 HiC (24 total)</li>",
-                                  "  <li><b>Origin:</b> EMBRAPA - Brazil</li>",
-                                  "  <li><b>Sequencing:</b> Illumina WGS, ~25&times; coverage + KO34 HiFi + KO34 HiC</li>",
-                                  "  <li><b>Sequencing data total markers (without filters):</b>  Illumina WGS (~7M); KO34 HiFi (~3M); KO34 HiC (~3M) </li>",
-                                  "  <li><b>Panel comparison:</b> Only Markers intersecting with the 40k MolBreeding Marker Panel</li>",
-                                  "</ul>"
-                                ))
-                            )
-                          ),
-                          conditionalPanel(
-                            condition = sprintf("input['%s'] == 'WGS_KO34_hawaii'", ns("cnv_builtin_dataset")),
-                            div(style = "border-left: 4px solid #6f42c1; background:#f8f9fa; border-radius:4px; padding: 12px 12px 12px 16px; margin-bottom:8px;",
-                                HTML(paste0(
-                                  "<h5><b>WGS Hawaii + KO34</b></h5>",
-                                  "<p>Common markers between the 40K MolBreeding Marker Panel and the short reads Whole-genome sequencing dataset comprising <b>70 <em>Coffea arabica</em> accessions</b> ",
-                                  "from the <b>USDA Hawaii germplasm collection</b>, together with the ",
-                                  "publicly available HiFi and HiC <b>KO34</b>.</p>",
-                                  "<ul>",
-                                  "  <li><b>Samples:</b> 69 WGS accessions + KO34 HiFi + KO34 HiC (71 total)</li>",
-                                  "  <li><b>Origin:</b> USDA - Hawaii, USA</li>",
-                                  "  <li><b>Sequencing:</b> Illumina WGS, ~25&times; coverage + KO34 HiFi + KO34 HiC</li>",
-                                  "  <li><b>Sequencing data total markers (without filters):</b>  Illumina WGS (~7M); KO34 HiFi (~3M); KO34 HiC (~3M) </li>",
-                                  "  <li><b>Panel comparison:</b> Only Markers intersecting with the 40k MolBreeding Marker Panel</li>",
-                                  "</ul>"
-                                ))
-                            )
-                          ),
-                          conditionalPanel(
-                            condition = sprintf("input['%s'] == 'WGS_KO34_opt'", ns("cnv_builtin_dataset")),
-                            div(style = "border-left: 4px solid #6f42c1; background:#f8f9fa; border-radius:4px; padding: 12px 12px 12px 16px; margin-bottom:8px;",
-                                HTML(paste0(
-                                  "<h5><b>WGS + KO34 Optimized Filters </b></h5>",
-                                  "<p>Short reads whole-genome sequencing dataset comprising <b>all 91 <em>Coffea arabica</em> accessions</b> ",
-                                  "(Hawaii + Brazil collections), together with the publicly available HiFi <b>KO34</b>.</p>",
-                                  "<ul>",
-                                  "  <li><b>Samples:</b> 91 accessions + KO34_hifi (92 total)</li>",
-                                  "  <li><b>Origin:</b> USDA Hawaii (USA) + EMBRAPA (Brazil)</li>",
-                                  "  <li><b>Sequencing:</b> Illumina WGS, ~25&times; coverage + KO34 HiFi</li>",
-                                  "  <li><b>Sequencing data total markers (without filters):</b>  Illumina WGS (~7M); KO34 HiFi (~3M) </li>",
-                                  "  <li><b>In this subset:</b> 100,037 Markers filtered by mean depth (min 5 max 200); missing (max 25); maf 0.05; remove markers on repeats region; keep only markers present on HiFi dataset </li>",
-                                  "</ul>"
-                                ))
-                            )
-                          ),
-                          conditionalPanel(
-                            condition = sprintf("input['%s'] == 'WGS_KO34_brazil_opt'", ns("cnv_builtin_dataset")),
-                            div(style = "border-left: 4px solid #6f42c1; background:#f8f9fa; border-radius:4px; padding: 12px 12px 12px 16px; margin-bottom:8px;",
-                                HTML(paste0(
-                                  "<h5><b>WGS Brazil + KO34 Optimized Filters </b></h5>",
-                                  "<p> Short reads Whole-genome sequencing dataset comprising <b>23 <em>Coffea arabica</em> accessions</b> ",
-                                  "from the <b>Brazilian germplasm collection (Embrapa)</b>, together with the ",
-                                  "publicly available HiFi <b>KO34</b>.</p>",
-                                  "<ul>",
-                                  "  <li><b>Samples:</b> 22 accessions + KO34 HiFi (24 total)</li>",
-                                  "  <li><b>Origin:</b> EMBRAPA - Brazil</li>",
-                                  "  <li><b>Sequencing:</b> Illumina WGS, ~25&times; coverage + KO34 HiFi</li>",
-                                  "  <li><b>Sequencing data total markers (without filters):</b>  Illumina WGS (~7M); KO34 HiFi (~3M) </li>",
-                                  "  <li><b>In this subset:</b> 100,037 Markers filtered by mean depth (min 5 max 200); missing (max 25); maf 0.05; remove markers on repeats region; keep only markers present on HiFi dataset </li>",
-                                  "</ul>"
-                                ))
-                            )
-                          ),
-                          conditionalPanel(
-                            condition = sprintf("input['%s'] == 'WGS_KO34_hawaii_opt'", ns("cnv_builtin_dataset")),
-                            div(style = "border-left: 4px solid #6f42c1; background:#f8f9fa; border-radius:4px; padding: 12px 12px 12px 16px; margin-bottom:8px;",
-                                HTML(paste0(
-                                  "<h5><b>WGS Hawaii + KO34 Optimized Filters </b></h5>",
-                                  "<p> Short reads Whole-genome sequencing dataset comprising <b>70 <em>Coffea arabica</em> accessions</b> ",
-                                  "from the <b>USDA Hawaii germplasm collection</b>, together with the ",
-                                  "publicly available HiFi <b>KO34</b>.</p>",
-                                  "<ul>",
-                                  "  <li><b>Samples:</b> 69 WGS accessions + KO34 HiFi (70 total)</li>",
-                                  "  <li><b>Origin:</b> USDA - Hawaii, USA</li>",
-                                  "  <li><b>Sequencing:</b> Illumina WGS, ~25&times; coverage + KO34 HiFi</li>",
-                                  "  <li><b>Sequencing data total markers (without filters):</b>  Illumina WGS (~7M); KO34 HiFi (~3M) </li>",
-                                  "  <li><b>In this subset:</b> 100,037 Markers filtered by mean depth (min 5 max 200); missing (max 25); maf 0.05; remove markers on repeats region; keep only markers present on HiFi dataset </li>",
-                                  "</ul>"
-                                ))
-                            )
-                          ),
+                          )
                    )
                  ),
                  fluidRow(
@@ -295,13 +200,13 @@ mod_cnv_ui <- function(id){
                    br(),
                    fluidRow(
                      column(width = 12,
-                            shinyWidgets::pickerInput(
+                            pickerInput(
                               ns("cnv_filter_samples"),
                               label   = NULL,
                               choices = NULL,
                               selected = NULL,
                               multiple = TRUE,
-                              options  = shinyWidgets::pickerOptions(
+                              options  = pickerOptions(
                                 actionsBox            = TRUE,
                                 liveSearch            = TRUE,
                                 liveSearchPlaceholder = "Search samples...",
@@ -324,13 +229,13 @@ mod_cnv_ui <- function(id){
                    br(),
                    fluidRow(
                      column(width = 6,
-                            shinyWidgets::pickerInput(
+                            pickerInput(
                               ns("cnv_filter_families"),
                               label   = tags$label("Select families", style = "font-weight:bold"),
                               choices  = NULL,
                               selected = NULL,
                               multiple = FALSE,
-                              options  = shinyWidgets::pickerOptions(
+                              options  = pickerOptions(
                                 actionsBox            = TRUE,
                                 liveSearch            = TRUE,
                                 liveSearchPlaceholder = "Search families...",
@@ -361,15 +266,10 @@ mod_cnv_ui <- function(id){
                    column(width = 3,
                           numericInput(ns("gray_CN"), label = "Gray color CN",
                                        value = 2L, min = 1L, max = 12L, step = 1L, width = "50%")
-                   ), 
-                   column(width = 3,
-                          numericInput(ns("nrow"), label = "Plot Number of rows",
-                                       value = 2L, min = 1L, step = 1L, width = "50%")
-                   ),
-                   
+                   ),                   
                    column(width = 3,
                           tags$label("Interactive plot"),
-                          shinyWidgets::prettyRadioButtons(
+                          prettyRadioButtons(
                             ns("interactive"),
                             label    = NULL,
                             choices  = c("TRUE", "FALSE"),
@@ -380,7 +280,7 @@ mod_cnv_ui <- function(id){
                    ),
                    column(width = 3,
                           tags$label("Add heterozygosity"),
-                          shinyWidgets::prettyRadioButtons(
+                          prettyRadioButtons(
                             ns("add_heterozygosity"),
                             label    = NULL,
                             choices  = c("TRUE", "FALSE"),
@@ -396,9 +296,9 @@ mod_cnv_ui <- function(id){
                  ), br(),
                  fluidRow(
                    column(width = 12,
-                          shinyWidgets::progressBar(id = ns("cnv_plot"), value = 0,
-                                                    title = "", display_pct = FALSE,
-                                                    status = "info", striped = TRUE)
+                          progressBar(id = ns("cnv_plot"), value = 0,
+                                      title = "", display_pct = FALSE,
+                                      status = "info", striped = TRUE)
                    )
                  ), br(),
                  fluidRow(
@@ -411,7 +311,7 @@ mod_cnv_ui <- function(id){
                           div(style = "float:left",
                               dropdownButton(
                                 tags$h3("Save CNV Compare Plot"),
-                                selectInput(ns("cnv_image_type"), "File Type", choices = c("jpeg","tiff","png","svg"), selected = "jpeg"),
+                                selectInput(ns("cnv_image_type"), "File Type", choices = c("jpeg","tiff","png","svg", "html"), selected = "html"),
                                 sliderInput(ns("cnv_image_res"), "Resolution", value = 300, min = 50, max = 1000, step = 50),
                                 sliderInput(ns("cnv_image_width"), "Width", value = 10, min = 1, max = 20, step = 0.5),
                                 sliderInput(ns("cnv_image_height"), "Height", value = 6, min = 1, max = 20, step = 0.5),
@@ -430,21 +330,21 @@ mod_cnv_ui <- function(id){
                  width = 12, collapsible = TRUE, collapsed = FALSE,
                  fluidRow(
                    column(width = 12,
-                          shinyWidgets::progressBar(id = ns("baf_z_plot_bar"), value = 0,
-                                                    title = "", display_pct = FALSE,
-                                                    status = "info", striped = TRUE)
+                          progressBar(id = ns("baf_z_plot_bar"), value = 0,
+                                      title = "", display_pct = FALSE,
+                                      status = "info", striped = TRUE)
                    ), br(),
                    column(width = 12,
                           plotOutput(ns("baf_z_plot"), height = "800px", width = "100%")
                    ), br(),
                    column(width = 12,
-                          shinyWidgets::pickerInput(
+                          pickerInput(
                             ns("cnv_filter_samples_baf"),
                             label   = NULL,
                             choices = NULL,
                             selected = NULL,
                             multiple = FALSE,
-                            options  = shinyWidgets::pickerOptions(
+                            options  = pickerOptions(
                               actionsBox            = TRUE,
                               liveSearch            = TRUE,
                               liveSearchPlaceholder = "Search samples...",
@@ -461,7 +361,7 @@ mod_cnv_ui <- function(id){
                    ), br(),
                    column(width = 3,
                           tags$label("Remove dots"),
-                          shinyWidgets::prettyRadioButtons(
+                          prettyRadioButtons(
                             ns("summarize"),
                             label    = NULL,
                             choices  = c("TRUE", "FALSE"),
@@ -472,7 +372,7 @@ mod_cnv_ui <- function(id){
                    ),
                    column(width = 3,
                           tags$label("Summarize Z dots by mean"),
-                          shinyWidgets::prettyRadioButtons(
+                          prettyRadioButtons(
                             ns("summarize_z"),
                             label    = NULL,
                             choices  = c("TRUE", "FALSE"),
@@ -483,7 +383,7 @@ mod_cnv_ui <- function(id){
                    ),
                    column(width = 3,
                           tags$label("Show windows lines"),
-                          shinyWidgets::prettyRadioButtons(
+                          prettyRadioButtons(
                             ns("show_windows_lines"),
                             label    = NULL,
                             choices  = c("TRUE", "FALSE"),
@@ -497,12 +397,12 @@ mod_cnv_ui <- function(id){
                    column(width = 12,
                           div(style = "float:left",
                               dropdownButton(
-                                tags$h3("Save CNV Plot"),
-                                selectInput(ns("cnv_image_type"), "File Type", choices = c("jpeg","tiff","png","svg"), selected = "jpeg"),
-                                sliderInput(ns("cnv_image_res"), "Resolution", value = 300, min = 50, max = 1000, step = 50),
-                                sliderInput(ns("cnv_image_width"), "Width", value = 10, min = 1, max = 20, step = 0.5),
-                                sliderInput(ns("cnv_image_height"), "Height", value = 6, min = 1, max = 20, step = 0.5),
-                                downloadButton(ns("download_cnv_plot"), "Save Image"),
+                                tags$h3("Save BAF and Z-scores Plot"),
+                                selectInput(ns("baf_image_type"), "File Type", choices = c("jpeg","tiff","png","svg"), selected = "jpeg"),
+                                sliderInput(ns("baf_image_res"), "Resolution", value = 300, min = 50, max = 1000, step = 50),
+                                sliderInput(ns("baf_image_width"), "Width", value = 10, min = 1, max = 20, step = 0.5),
+                                sliderInput(ns("baf_image_height"), "Height", value = 6, min = 1, max = 20, step = 0.5),
+                                downloadButton(ns("download_baf_plot"), "Save Image"),
                                 circle = FALSE, status = "danger",
                                 icon = icon("floppy-disk"), width = "300px", label = "Save",
                                 tooltip = tooltipOptions(title = "Save CNV plot")
@@ -522,6 +422,17 @@ mod_cnv_ui <- function(id){
 #' @importFrom graphics axis hist points
 #' @import ggplot2
 #' @importFrom scales comma_format
+#' @importFrom grDevices dev.off jpeg png tiff svg
+#' @importFrom shinyWidgets updateProgressBar progressBar updatePickerInput
+#' @import Qploidy
+#' @importFrom tidyr separate_rows
+#' @importFrom dplyr mutate filter select
+#' @importFrom shinydisconnect disconnectMessage
+#' @importFrom plotly renderPlotly plotlyOutput ggplotly event_data
+#' @import shiny 
+#' @importFrom bs4Dash updatebs4TabItems updateBox
+#' @importFrom magrittr %>%
+#' @importFrom data.table fread
 #'
 #' @noRd
 mod_cnv_server <- function(input, output, session, parent_session){
@@ -544,36 +455,37 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   # Built-in dataset file paths (inst/ directory)
   builtin_cnv_paths <- list(
-    WGS_KO34 = list(
-      marker = "coffee/vcf9_hmm_CN_estimation_by_marker.csv",
-      window = "coffee/vcf9_hmm_CN_estimation_by_window.csv",
-      params = "coffee/vcf9_hmm_CN_estimation_params.rds"
-    ),
-     WGS_KO34_opt = list(
-      marker = "coffee/vcf7_hmm_CN_estimation_by_marker.csv",
-      window = "coffee/vcf7_hmm_CN_estimation_by_window.csv",
-      params = "coffee/vcf7_hmm_CN_estimation_params.rds"
+    alfalfa_3k_f1 = list(
+      marker = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_by_marker.csv.gz",
+      window = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_by_window.csv.gz",
+      params = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_params.rds"
     )
   )
   
   builtin_passport_paths <- list(
-    WGS_KO34 = "coffee/BI_sample_collection_final.csv"
+    alfalfa_3k_f1 = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_passport.csv"
   )
   
-  # Load built-in dataset using Qploidy::read_hmm_CN
+  # Load built-in dataset using read_hmm_CN
   observeEvent(input$cnv_load_dataset, {
     req(nzchar(input$cnv_builtin_dataset))
     paths <- builtin_cnv_paths[[input$cnv_builtin_dataset]]
     req(!is.null(paths))
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 10, title = "Loading Qploidy HMM results...")
+    updateProgressBar(session, "pb_cnv", value = 10, title = "Loading Qploidy HMM results...")
     
-    marker_path <- system.file(paths$marker, package = "GenoBrew")
-    window_path <- system.file(paths$window, package = "GenoBrew")
-    params_path <- system.file(paths$params, package = "GenoBrew")
-    req(file.exists(marker_path), file.exists(window_path), file.exists(params_path))
-    cnv_items$hmm_CN <- Qploidy::read_hmm_CN(by_window_file = window_path, 
-                                             by_marker_file = marker_path, params_file = params_path)
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
+    marker_path <- paths$marker
+    window_path <- paths$window
+    params_path <- paths$params
+
+    req(file.exists(marker_path) | grepl("^https?://", marker_path),
+        file.exists(window_path) | grepl("^https?://", window_path),
+        file.exists(params_path) | grepl("^https?://", params_path))
+
+    cnv_items$hmm_CN <- read_hmm_CN(by_window_file = window_path, 
+                                    by_marker_file = marker_path, 
+                                    params_file = params_path)
+
+    updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
     
   })
   
@@ -581,48 +493,47 @@ mod_cnv_server <- function(input, output, session, parent_session){
     req(nzchar(input$cnv_builtin_passport))
     paths <- builtin_passport_paths[[input$cnv_builtin_passport]]
     req(!is.null(paths))
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 50, title = "Loading passport data...")
+    updateProgressBar(session, "pb_cnv", value = 50, title = "Loading passport data...")
     
-    passport_path <- system.file(paths, package = "GenoBrew")
-    req(file.exists(passport_path))
+    passport_path <- paths
+    req(file.exists(passport_path) | grepl("^https?://", passport_path))
     cnv_items$passport_df <- read.csv(passport_path)
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 55, title = "Passport data loaded.")
+    updateProgressBar(session, "pb_cnv", value = 55, title = "Passport data loaded.")
     
   })
   
   # Load uploaded files
   observeEvent(input$cnv_load_file, {
     req(input$cnv_file_marker, input$cnv_file_window)
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 10, title = "Loading Qploidy HMM results...")
+    updateProgressBar(session, "pb_cnv", value = 10, title = "Loading Qploidy HMM results...")
     
     marker_path <- input$cnv_file_marker$datapath
     window_path <- input$cnv_file_window$datapath
     params_path <- if (!is.null(input$cnv_file_params)) input$cnv_file_params$datapath else NULL
-    cnv_items$hmm_CN <- Qploidy::read_hmm_CN(marker_path, window_path, params_path)
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
+
+    cnv_items$hmm_CN <- read_hmm_CN(marker_path, window_path, params_path)
+    updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
   })
   
   observeEvent(input$cnv_load_file, {
     req(nzchar(input$passport_file))
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 50, title = "Loading passport data...")
+    updateProgressBar(session, "pb_cnv", value = 50, title = "Loading passport data...")
     
     passport_path <- input$passport_file$datapath
     cnv_items$passport_df <- read.csv(passport_path)
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 55, title = "Passport data loaded.")
+    updateProgressBar(session, "pb_cnv", value = 55, title = "Passport data loaded.")
     
   })
   
   observe({
     req(cnv_items$hmm_CN, cnv_items$passport_df)
     
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 95, title = "Updating family-sample mapping...")
+    updateProgressBar(session, "pb_cnv", value = 95, title = "Updating family-sample mapping...")
     
     df <- cnv_items$passport_df
     # Quality check: report any mismatches between passport and VCF sample names
     samples <- unique(cnv_items$hmm_CN$by_window$Sample)
-    only_pass <- df$ID[!df$ID %in% samples]       # passport IDs absent from VCF
-    df <- df[-which(!df$ID %in% samples),]
-    only_hmm <- samples[!samples %in% df$ID]     # VCF samples absent from passport
+    if(length(which(!df$ID %in% samples)) > 0) df <- df[-which(!df$ID %in% samples),]
     
     # Reshape passport to long format so multi-family individuals are expanded
     df_long <- df %>%
@@ -664,7 +575,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   observe({
     req(cnv_items$hmm_CN)
-    shinyWidgets::updateProgressBar(session, "pb_cnv", value = 100, title = "Updating sample picker choices...")
+    updateProgressBar(session, "pb_cnv", value = 100, title = "Updating sample picker choices...")
     
     samples <- unique(cnv_items$hmm_CN$by_window$Sample)
     
@@ -681,7 +592,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
   dosages <- reactive({
     req(cnv_items$hmm_CN, input$add_heterozygosity)
     if(input$add_heterozygosity == "TRUE") {
-      shinyWidgets::updateProgressBar(session, "cnv_plot", value = 50, title = "Calling dosages for heterozygosity estimation...")
+      updateProgressBar(session, "cnv_plot", value = 50, title = "Calling dosages for heterozygosity estimation...")
       
       call_hmm_dosages(cnv_items$hmm_CN, bw = 0.15, dist = "gaussian", add_uniform = FALSE, uniform_weight = 0.01)
     } else NULL
@@ -689,7 +600,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   cnv_profile <- eventReactive(input$cnv_profile_plot, {
     req(cnv_items$hmm_CN)
-    shinyWidgets::updateProgressBar(session, "cnv_plot", value = 0, title = "Building CNV profile plot...")
+    updateProgressBar(session, "cnv_plot", value = 0, title = "Building CNV profile plot...")
     
     
     # Determine which tab is active for sample selection
@@ -708,36 +619,26 @@ mod_cnv_server <- function(input, output, session, parent_session){
     
     plot <- compare_cn_track(cnv_items$hmm_CN, 
                              samples_to_plot = samples_to_plot, 
-                             facet_nrow = input$nrow,
+                             facet_nrow = 1,
                              gray_CN = input$gray_CN, 
                              add_het = input$add_heterozygosity == "TRUE",
                              hmm_dosage_calls = dosages(),
-                             interactive = input$interactive == "TRUE")
+                             interactive = TRUE)
     
-    shinyWidgets::updateProgressBar(session, "cnv_plot", value = 100, title = "CNV profile plot ready.")
+    updateProgressBar(session, "cnv_plot", value = 100, title = "CNV profile plot ready.")
     
     plot
   })
   
   ##########
   
-  output$cnv_compare_plotly <- plotly::renderPlotly({
+  output$cnv_compare_plotly <- renderPlotly({
     req(cnv_profile())
-    plotly_plot <- plotly::ggplotly(cnv_profile(), source = "cnv_source")
-    plotly_plot
-  })
-  
-  output$cnv_compare_plot <- renderPlot({
-    req(cnv_profile())
-    cnv_profile()
+    ggplotly(cnv_profile(), source = "cnv_source")
   })
   
   output$cnv_compare_plot_ui <- renderUI({
-    if (identical(input$interactive, "TRUE")) {
-      plotly::plotlyOutput(ns("cnv_compare_plotly"), height = "600px")
-    } else {
-      plotOutput(ns("cnv_compare_plot"), height = "600px", click = ns("cnv_plot_click"))
-    }
+    plotlyOutput(ns("cnv_compare_plotly"), height = "600px")
   })
   
   # Simple ggplot click handler - manual coordinate detection
@@ -765,8 +666,8 @@ mod_cnv_server <- function(input, output, session, parent_session){
   })
   
   # Plotly click handler - try different event source
-  observeEvent(plotly::event_data("plotly_click"), {
-    click_data <- plotly::event_data("plotly_click")
+  observeEvent(event_data("plotly_click"), {
+    click_data <- event_data("plotly_click")
     
     if(!is.null(click_data)) {
       tryCatch({
@@ -785,7 +686,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   baf_z <- reactive({
     req(cnv_items$hmm_CN, cnv_profile(), input$cnv_filter_samples_baf, !is.null(input$cnv_filter_samples_baf))
-    shinyWidgets::updateProgressBar(session, "baf_z_plot_bar", value = 10, title = "CNV profile plot ready.")
+    updateProgressBar(session, "baf_z_plot_bar", value = 10, title = "CNV profile plot ready.")
     
     plot <- plot_cn_track(cnv_items$hmm_CN, 
                           sample_id = input$cnv_filter_samples_baf,
@@ -793,8 +694,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
                           z_by_mean = input$summarize_z == "TRUE",
                           show_window_lines = input$show_windows_lines == "TRUE")
     
-    shinyWidgets::updateProgressBar(session, "baf_z_plot_bar", value = 100, title = "CNV profile plot ready.")
-    
+    updateProgressBar(session, "baf_z_plot_bar", value = 100, title = "CNV profile plot ready.")
     
     plot
   })
@@ -807,8 +707,8 @@ mod_cnv_server <- function(input, output, session, parent_session){
   # Help links
   observeEvent(input$goPar, {
     # change to help tab
-    bs4Dash::updatebs4TabItems(session = parent_session, inputId = "MainMenu",
-                               selected = "help")
+    updatebs4TabItems(session = parent_session, inputId = "MainMenu",
+                      selected = "help")
     
     # select specific tab
     updateTabsetPanel(session = parent_session, inputId = "Genomic_cnv_tabset",
@@ -819,8 +719,8 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   observeEvent(input$goRes, {
     # change to help tab
-    bs4Dash::updatebs4TabItems(session = parent_session, inputId = "MainMenu",
-                               selected = "help")
+    updatebs4TabItems(session = parent_session, inputId = "MainMenu",
+                      selected = "help")
     
     # select specific tab
     updateTabsetPanel(session = parent_session, inputId = "Genomic_cnv_tabset",
@@ -831,8 +731,8 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   observeEvent(input$goCite, {
     # change to help tab
-    bs4Dash::updatebs4TabItems(session = parent_session, inputId = "MainMenu",
-                               selected = "help")
+    updatebs4TabItems(session = parent_session, inputId = "MainMenu",
+                      selected = "help")
     
     # select specific tab
     updateTabsetPanel(session = parent_session, inputId = "Genomic_cnv_tabset",
@@ -849,6 +749,54 @@ mod_cnv_server <- function(input, output, session, parent_session){
       ex <- system.file("iris_DArT_VCF.vcf.gz", package = "BIGapp")
       file.copy(ex, file)
     })
+  
+  # Download handler for CNV plot
+  output$download_cnv_plot <- downloadHandler(
+    filename = function() {
+      paste("CNV_Plot", Sys.Date(), ".", input$cnv_image_type, sep = "")
+    },
+    content = function(file) {
+      req(cnv_profile())
+      if(input$cnv_image_type == "html") {
+        htmlwidgets::saveWidget(cnv_profile(), file)
+      } else {
+        
+        plot <- compare_cn_track(cnv_items$hmm_CN, 
+                                 samples_to_plot = samples_to_plot, 
+                                 facet_nrow = 1,
+                                 gray_CN = input$gray_CN, 
+                                 add_het = input$add_heterozygosity == "TRUE",
+                                 hmm_dosage_calls = dosages(),
+                                 interactive = FALSE)
+        ggsave(
+          filename = file,
+          plot = plot,
+          device = input$cnv_image_type,
+          dpi = input$cnv_image_res,
+          width = input$cnv_image_width,
+          height = input$cnv_image_height
+        )
+      }
+    }
+  )
+  
+  # Download handler for BAF and Z-scores plot
+  output$download_baf_plot <- downloadHandler(
+    filename = function() {
+      paste("BAF_Zscores_Plot", Sys.Date(), ".", input$baf_image_type, sep = "")
+    },
+    content = function(file) {
+      req(baf_z())
+      ggsave(
+        filename = file,
+        plot = baf_z(),
+        device = input$baf_image_type,
+        dpi = input$baf_image_res,
+        width = input$baf_image_width,
+        height = input$baf_image_height
+      )
+    }
+  )
   
   ##Summary Info
   cnv_summary_info <- function() {

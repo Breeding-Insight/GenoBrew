@@ -46,14 +46,24 @@ load_vcf_panel <- function(panel_df, vcf_path, verbose = FALSE) {
   # ----- input checks --------------------------------------------------------
   if (!inherits(panel_df, "data.frame"))
     stop("`panel_df` must be a data.frame.")
-  if (!"SNP.ID" %in% colnames(panel_df))
-    stop("`panel_df` must contain a column named 'SNP.ID'.")
-  if (!file.exists(vcf_path))
+  if (!any(c("Chr", "Chromosome", "CHROM") %in% colnames(panel_df))){
+    stop("`panel_df` must contain a column named 'Chr', 'Chromosome', or 'CHROM'.")
+  } else {
+    chr <- colnames(panel_df)[grepl("Chr|Chromosome|CHROM", colnames(panel_df))][1]
+  }
+  if (!any(c("Pos", "Position", "POS") %in% colnames(panel_df))){
+    stop("`panel_df` must contain a column named 'Pos', 'Position', or 'POS'.")
+  } else {
+    pos <- colnames(panel_df)[grepl("Pos|Position|POS", colnames(panel_df))][1]
+  }
+  # Check if vcf_path is a URL or a local file
+  if (!file.exists(vcf_path) & !grepl("^https?://", vcf_path)) {
     stop("VCF file not found: ", vcf_path)
+  }
   
   # ----- read VCF ------------------------------------------------------------
   if (verbose) message("Reading VCF: ", vcf_path)
-  vcf <- vcfR::read.vcfR(vcf_path, verbose = verbose)
+  vcf <- read.vcfR(vcf_path, verbose = verbose)
   
   # ----- counts before intersection ------------------------------------------
   n_wgs   <- nrow(vcf@fix)
@@ -65,8 +75,8 @@ load_vcf_panel <- function(panel_df, vcf_path, verbose = FALSE) {
   }
   
   # ----- intersect by marker ID ----------------------------------------------
-  vcf_ids   <- vcf@fix[, "ID"]
-  panel_ids <- panel_df[["SNP.ID"]]
+  vcf_ids   <- paste0(vcf@fix[, "CHROM"], "_",vcf@fix[, "POS"])
+  panel_ids <- paste0(panel_df[[chr]], "_", panel_df[[pos]])
   
   common_ids <- intersect(vcf_ids, panel_ids)
   n_common   <- length(common_ids)
@@ -137,18 +147,18 @@ plot_marker_positions <- function(marker_stats,
                                   gradient_colours = c("#2166ac", "#fc8d59", "#b2182b"),
                                   ploidy           = 2L,
                                   interactive      = FALSE) {
-
+  
   # ----- input validation ----------------------------------------------------
   if (!is.data.frame(marker_stats))
     stop("`marker_stats` must be a data.frame.")
-
+  
   required_cols <- c("CHR", "Position", "MarkerID")
   missing_cols  <- setdiff(required_cols, colnames(marker_stats))
   if (length(missing_cols) > 0)
     stop("marker_stats is missing required columns: ", paste(missing_cols, collapse = ", "))
-
+  
   ploidy <- as.integer(ploidy)
-
+  
   # ----- valid colour_by options ---------------------------------------------
   valid_colour_by <- c(
     if ("Pct_Missing"         %in% colnames(marker_stats)) "missing",
@@ -158,25 +168,25 @@ plot_marker_positions <- function(marker_stats,
     if ("In_Repeats"          %in% colnames(marker_stats)) "repeated",
     if ("Pct_CNV_diff_ploidy" %in% colnames(marker_stats)) "CNV"
   )
-
+  
   if (!is.null(colour_by) && !colour_by %in% valid_colour_by)
     stop("`colour_by` must be NULL or one of: ", paste(valid_colour_by, collapse = ", "))
-
+  
   # ----- metric column -------------------------------------------------------
   fix <- marker_stats
   fix$POS <- as.numeric(fix$Position)
-
+  
   if (!is.null(colour_by)) {
     fix$metric <- switch(colour_by,
-      missing        = fix$Pct_Missing,
-      depth          = fix$MeanDP,
-      heterozygosity = fix$Pct_Het,
-      MAF            = fix$MAF,
-      repeated       = ifelse(fix$In_Repeats, "repeated", "unique"),
-      CNV            = fix$Pct_CNV_diff_ploidy
+                         missing        = fix$Pct_Missing,
+                         depth          = fix$MeanDP,
+                         heterozygosity = fix$Pct_Het,
+                         MAF            = fix$MAF,
+                         repeated       = ifelse(fix$In_Repeats, "repeated", "unique"),
+                         CNV            = fix$Pct_CNV_diff_ploidy
     )
   }
-
+  
   # ----- tooltip -------------------------------------------------------------
   if (interactive) {
     fix$tooltip <- paste0(
@@ -190,7 +200,7 @@ plot_marker_positions <- function(marker_stats,
       "<br>Repeat reg: ",if ("In_Repeats"         %in% colnames(fix)) ifelse(fix$In_Repeats, "Yes", "No") else "N/A"
     )
   }
-
+  
   # ----- chromosome order ----------------------------------------------------
   chroms    <- unique(fix$CHR)
   num_part  <- as.integer(gsub("^chr([0-9]+)[ce]$", "\\1", chroms))
@@ -198,10 +208,10 @@ plot_marker_positions <- function(marker_stats,
   ord       <- order(num_part, sub_part)
   chrom_levels  <- chroms[ord]
   display_levels <- rev(chrom_levels)
-
+  
   fix$CHROM <- factor(fix$CHR, levels = chrom_levels)
   fix$y_pos <- as.integer(factor(fix$CHROM, levels = display_levels))
-
+  
   # ----- chromosome background bars ------------------------------------------
   chrom_max <- tapply(fix$POS, fix$CHROM, max, na.rm = TRUE)
   bar_df <- data.frame(
@@ -211,18 +221,18 @@ plot_marker_positions <- function(marker_stats,
   )
   bar_df$CHROM <- factor(bar_df$CHROM, levels = chrom_levels)
   bar_df$y_pos <- as.integer(factor(bar_df$CHROM, levels = display_levels))
-
+  
   # ----- legend label --------------------------------------------------------
   legend_label <- switch(colour_by %||% "",
-    missing        = "Missing (%)",
-    depth          = "Mean Depth",
-    heterozygosity = "Heterozygosity",
-    MAF            = "MAF",
-    repeated       = "Region",
-    CNV            = paste0("% Samples\nCN\u2260", ploidy),
-    ""
+                         missing        = "Missing (%)",
+                         depth          = "Mean Depth",
+                         heterozygosity = "Heterozygosity",
+                         MAF            = "MAF",
+                         repeated       = "Region",
+                         CNV            = paste0("% Samples\nCN\u2260", ploidy),
+                         ""
   )
-
+  
   # ----- plot ----------------------------------------------------------------
   p <- ggplot2::ggplot() +
     ggplot2::geom_tile(
@@ -231,7 +241,7 @@ plot_marker_positions <- function(marker_stats,
                    width = max_pos, height = bar_height),
       fill = bar_colour, colour = NA
     )
-
+  
   seg_aes <- function(colour = FALSE) {
     if (interactive) {
       if (colour)
@@ -256,7 +266,7 @@ plot_marker_positions <- function(marker_stats,
                      yend = y_pos + bar_height / 2)
     }
   }
-
+  
   if (is.null(colour_by)) {
     p <- p + ggplot2::geom_segment(
       data      = fix,
@@ -281,7 +291,7 @@ plot_marker_positions <- function(marker_stats,
         na.value = "grey60"
       )
   }
-
+  
   p <- p +
     ggplot2::scale_x_continuous(
       labels = scales::label_number(suffix = " Mb", scale = 1e-6),
@@ -306,7 +316,7 @@ plot_marker_positions <- function(marker_stats,
       plot.title         = ggplot2::element_text(face = "bold", size = 13),
       plot.margin        = ggplot2::margin(8, 12, 8, 8)
     )
-
+  
   if (interactive) {
     return(
       plotly::ggplotly(p, tooltip = "text") |>
@@ -315,7 +325,7 @@ plot_marker_positions <- function(marker_stats,
         )
     )
   }
-
+  
   return(p)
 }
 
@@ -341,6 +351,7 @@ plot_marker_positions <- function(marker_stats,
 ##' @importFrom data.table setDT
 ##' @importFrom data.table setnames
 ##' @importFrom data.table data.table
+##' 
 get_stats_df <- function(vcf, bed_data, win_data, dist_ploidy, filter_samples = NULL){
   
   fix <- as.data.frame(vcf@fix, stringsAsFactors = FALSE)
@@ -369,7 +380,20 @@ get_stats_df <- function(vcf, bed_data, win_data, dist_ploidy, filter_samples = 
   mean_depth <- rowMeans(dp_mat, na.rm = TRUE)
   
   # --- Heterozygosity ---
-  het_patterns <- c("0/1", "1/0", "0|1", "1|0")
+  alleles <- expand.grid(rep(list(0:1), dist_ploidy))
+  
+  # Keep only heterozygous patterns (mix of 0s and 1s)
+  het_combos <- alleles[rowSums(alleles) > 0 & rowSums(alleles) < dist_ploidy, ]
+  
+  # Create patterns with both separators (/ and |)
+  het_patterns <- c()
+  for (i in 1:nrow(het_combos)) {
+    combo <- as.numeric(het_combos[i, ])
+    het_patterns <- c(het_patterns, 
+                      paste(combo, collapse = "/"),  # Unphased
+                      paste(combo, collapse = "|"))  # Phased
+  }
+  
   n_called <- rowSums(!is.na(gt_mat))
   n_het    <- rowSums(matrix(gt_mat %in% het_patterns, nrow = nrow(gt_mat)), na.rm = TRUE)
   het_pct  <- ifelse(n_called > 0, n_het / n_called * 100, NA_real_)
@@ -438,9 +462,9 @@ get_stats_df <- function(vcf, bed_data, win_data, dist_ploidy, filter_samples = 
     Pct_Het     = round(het_pct, 2),
     stringsAsFactors = FALSE
   )
-  if (!is.null(cn_counts))
+  if (!is.null(win_data))
     stats_df$Pct_CNV_diff_ploidy <- round(cn_counts, 2)
-  if (!is.null(in_repeats))
+  if (!is.null(bed_data))
     stats_df$In_Repeats <- in_repeats
   
   return(stats_df)
