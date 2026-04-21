@@ -12,7 +12,7 @@
 **GenoBrew** is a user-friendly R Shiny application for measuring marker
 panel efficiency according to dataset, help users optmize markers selection, 
 perform basic relationship analysis, and visualization of copy number variation (CNV) profiles. It
-includes built-in datasets for *Coffea arabica* genomic data exploration
+includes built-in datasets for *alfalfa* genomic data exploration
 and analysis, designed to support breeders and researchers without
 requiring command-line expertise.
 
@@ -21,18 +21,10 @@ requiring command-line expertise.
 - **Web-Based Interface:** Run analyses directly in the browser — no
   command-line required.
 - **Select Markers module:** Compare marker statistics derived from
-  whole-genome sequencing (WGS) of 91 *C. arabica* samples + KO34
-  against the **40k MolBreeding Marker Panel**. Interactively filter
-  marker subsets based on MAF, missing data, heterozygosity, and CNV
-  thresholds.
+  whole-genome sequencing (WGS), GBS, or other sequencing technology with a set marker panel.
 - **CNV Profiles module:** Explore interactive visualizations of copy
-  number variation profiles across 91 samples + KO34, with per-sample
-  and per-family filtering. Also visualize relationship statistics for families.
-- **Built-in datasets:** Three WGS *C. arabica* datasets ready to load
-  (Hawaii + KO34, Brazil + KO34, combined WGS + KO34).
-- **40k MolBreeding Panel:** Built-in marker panel based on the
-  *C. arabica* Red Bourbon reference genome
-  ([Scalabrin et al., 2024](https://doi.org/10.1038/s41588-024-01695-w)).
+  number variation profiles across samples. Also visualize relationship statistics for families.
+- **Built-in datasets:** Includes the Alfalfa F1 population dataset, ready to load for analysis. This dataset is publicly available and validated using the Alfalfa 3k DArTag marker panel.
 - **Upload your own data:** Accepts VCF and CNV files in CSV/TSV/GZ
   formats alongside a custom marker panel CSV.
 
@@ -63,7 +55,7 @@ Loads a CNV file (or built-in dataset) and visualizes:
 
 #### Local Installation
 
-1. **Install R** (≥ 3.6.0) from [CRAN](https://cran.r-project.org/).
+1. **Install R** (≥ 4.1.0) from [CRAN](https://cran.r-project.org/).
 
 2. **Install GenoBrew:**
 
