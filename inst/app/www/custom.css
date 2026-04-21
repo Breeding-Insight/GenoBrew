@@ -1,4 +1,4 @@
-/* ── Select Samples tabsetPanel (By Sample / By Family) ── */
+/* ── Select Samples tabsetPanel (By Sample / By Family) */
 
 /* inactive tab - grey background */
 #cnv_1-sample_select_tabs > li > a:not(.active) {

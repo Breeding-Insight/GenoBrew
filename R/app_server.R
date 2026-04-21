@@ -5,6 +5,7 @@
 #' @import shiny
 #' @importFrom httr GET content status_code
 #' @importFrom curl new_handle curl_fetch_memory
+#' @importFrom utils packageVersion
 #' @noRd
 app_server <- function(input, output, session) {
   # Your application server logic

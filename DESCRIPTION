@@ -18,7 +18,7 @@ Description: A user-friendly Shiny application for genomic variant analysis
     of copy number variation patterns by sample or family, with integrated 
     B-allele frequency (BAF) and z-score profile plots for comprehensive 
     chromosomal aberration assessment.
-License: AGPL (>= 3)
+License: Apache License 2.0
 Depends: R (>= 4.1.0)
 biocViews:
 Imports: 
@@ -29,7 +29,6 @@ Imports:
     golem,
     shinyWidgets,
     shinydisconnect,
-    shinyalert,
     plotly,
     vcfR,
     ggplot2,

@@ -156,7 +156,7 @@ mod_cnv_ui <- function(id){
                                   "<p>This dataset includes F1 populations of alfalfa, validated using the Alfalfa 3k DArTag marker panel. It demonstrates the application of GenoBrew functionalities to diverse sequencing methods.</p>",
                                   "<ul>",
                                   "  <li><b>Samples:</b> 183 progenies and 2 parents</li>",
-                                  "  <li><b>Source:</b> Zhao, D. (2023). \"A public mid-density genotyping platform for alfalfa (Medicago sativa L.)\". Genetic Resources, 4(8), pp. 55–63. <a href='https://doi.org/10.46265/genresj.EMOR6509' target='_blank'>DOI: 10.46265/genresj.EMOR6509</a>.</li>",
+                                  "  <li><b>Source:</b> Zhao, D. (2023). \"A public mid-density genotyping platform for alfalfa (Medicago sativa L.)\". Genetic Resources, 4(8), pp. 55.63. <a href='https://doi.org/10.46265/genresj.EMOR6509' target='_blank'>DOI: 10.46265/genresj.EMOR6509</a>.</li>",
                                   "  <li><b>Genotyping Method:</b> DArTag (mid-density genotyping platform)</li>",
                                   "  <li><b>Total Markers:</b> 2,766 </li>",
                                   "  <li><b>Panel Comparison:</b> Markers intersecting with the DArTag 3k Marker Panel</li>",

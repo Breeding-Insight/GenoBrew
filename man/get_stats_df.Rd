@@ -14,6 +14,8 @@ get_stats_df(vcf, bed_data, win_data, dist_ploidy, filter_samples = NULL)
 \item{win_data}{Optional. A data.frame or data.table with columns Sample, Chr, Start, End, CN_call, as produced by Qploidy HMM window output. Used to annotate markers with percentage of samples with CNV different from ploidy.}
 
 \item{dist_ploidy}{Integer. The reference ploidy level for CNV comparison (default 2 if NULL).}
+
+\item{filter_samples}{Optional character vector of sample names to include in the statistics calculation. If NULL, all samples in the VCF are used.}
 }
 \value{
 A data.frame with per-marker statistics: CHR, Position, MarkerID, MAF, MeanDP, Pct_Missing, Pct_Het, and optionally Pct_CNV_diff_ploidy and In_Repeats.
