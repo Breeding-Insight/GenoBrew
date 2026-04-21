@@ -33,9 +33,9 @@ mod_mk_select_ui <- function(id){
                  div(style = "position:relative;",
                      # OR divider - absolutely centered, spans full height
                      div(style = paste(
-                       "position:absolute; left:calc(41.66% + 4px); top:0; bottom:0;",
+                       "position:absolute; left:calc(50% + 4px); top:0; bottom:0;",
                        "display:flex; flex-direction:column; align-items:center;",
-                       "width:50px; margin-left:-25px; z-index:1; user-select:none;"
+                       "width:70px; margin-left:-30px; z-index:1; user-select:none;"
                      ),
                      div(style = "flex:1; width:1px; background:#ccc;"),
                      div(style = paste(
@@ -47,11 +47,11 @@ mod_mk_select_ui <- function(id){
                      ),
                      # Row 1: VCF
                      fluidRow(
-                       column(width = 5,
+                       column(width = 6,
                               fileInput(ns("mk_select_file"), "Upload VCF File", accept = c(".csv",".vcf",".gz"), width = "80%")
                        ),
                        column(width = 1),
-                       column(width = 6,
+                       column(width = 5,
                               tags$label("Choose a built-in dataset"),
                               selectInput(
                                 ns("builtin_dataset"),
@@ -64,11 +64,11 @@ mod_mk_select_ui <- function(id){
                      ),
                      # Row 2: marker panel
                      fluidRow(
-                       column(width = 5,
+                       column(width = 6,
                               fileInput(ns("panel_file"), "Upload Marker Panel CSV", accept = c(".csv", ".txt", ".tsv", ".gz"), width = "80%")
                        ),
                        column(width = 1),
-                       column(width = 6,
+                       column(width = 5,
                               tags$label("Choose a built-in marker panel"),
                               selectInput(
                                 ns("builtin_panel"),
@@ -81,7 +81,7 @@ mod_mk_select_ui <- function(id){
                      ),
                      # Row 3: repeat intervals (optional)
                      fluidRow(
-                       column(width = 5,
+                       column(width = 6,
                               fileInput(ns("repeats_file"),
                                         label = HTML("Repeat Intervals <small style='color:grey;font-weight:normal'>(.bed / .tsv / .gz, no header) <em>optional</em></small>"),
                                         accept = c(".bed", ".gz", ".tsv"),
@@ -91,7 +91,7 @@ mod_mk_select_ui <- function(id){
                               )
                        ),
                        column(width = 1),
-                       column(width = 6,
+                       column(width = 5,
                               tags$label(HTML("Choose a built-in repeat intervals file <small style='color:grey;font-weight:normal'><em>optional</em></small>")),
                               selectInput(
                                 ns("builtin_repeats"),
@@ -104,17 +104,17 @@ mod_mk_select_ui <- function(id){
                      ),
                      # Row 4: Qploidy HMM window (optional)
                      fluidRow(
-                       column(width = 5,
+                       column(width = 6,
                               fileInput(ns("qploidy_window_file"),
-                                        label = HTML("Qploidy HMM Results by Window <small style='color:grey;font-weight:normal'>(.csv) <em>optional</em></small>"),
-                                        accept = c(".csv"),
+                                        label = HTML("Qploidy HMM Results by Window <small style='color:grey;font-weight:normal'>(.csv, .gz) <em>optional</em></small>"),
+                                        accept = c(".csv", ".gz"),
                                         width  = "80%"),
                               div(style = "margin-top:-20px; margin-bottom:20px;",
                                   helpText("Unlocks colour-by number of samples with CN different than defined ploidy in the Marker Distribution plot.")
                               )
                        ),
                        column(width = 1),
-                       column(width = 6,
+                       column(width = 5,
                               tags$label(HTML("Choose a built-in Qploidy HMM file <small style='color:grey;font-weight:normal'><em>optional</em></small>")),
                               selectInput(
                                 ns("builtin_qploidy_window"),
@@ -125,14 +125,28 @@ mod_mk_select_ui <- function(id){
                               )
                        )
                      ),
+                     fluidRow(
+                       column(width = 6,
+                              numericInput(ns("dist_ploidy"), label = "Ploidy",
+                                           value = 4L, min = 1L, max = 12L, step = 1L, width = "30%")
+                       ),
+                                              column(width = 1),
+
+                       column(width = 5,
+                              numericInput(ns("dist_ploidy"), label = "Ploidy",
+                                           value = 4L, min = 1L, max = 12L, step = 1L, width = "30%")
+                       )
+                       
+                     ),
+                     
                      # Row 5: buttons
                      fluidRow(
-                       column(width = 5,
+                       column(width = 6,
                               actionButton(ns("mk_select_start"), "Load VCF", icon = icon("upload"),
                                            class = "btn-info")
                        ),
                        column(width = 1),
-                       column(width = 6,
+                       column(width = 5,
                               actionButton(ns("load_dataset"), "Load Dataset", icon = icon("database"),
                                            class = "btn-success")
                        )
@@ -236,11 +250,6 @@ mod_mk_select_ui <- function(id){
                                       min = 0, max = 100, value = c(0, 100), step = 1, post = "%", width = "70%"),
                           helpText("Keep markers whose observed heterozygosity falls within this range")
                    ),
-                   column(width = 2,
-                          numericInput(ns("dist_ploidy"), label = "Ploidy",
-                                       value = 2, min = 1, max = 10, step = 1, width = "70%"),
-                          helpText("Set the ploidy level for the analysis")
-                   ),
                    column(width = 4,
                           numericInput(ns("filter_cnv"),
                                        label = HTML("Max % CNV \u2260 defined ploidy <small style='color:grey;font-weight:normal'>(lower = fewer CNV-affected genotypes allowed)</small>"),
@@ -314,10 +323,6 @@ mod_mk_select_ui <- function(id){
                  fluidRow(
                    column(width = 4,
                           uiOutput(ns("ui_colour_by"))
-                   ),
-                   column(width = 5,
-                          numericInput(ns("dist_ploidy"), label = "Ploidy",
-                                       value = 2L, min = 1L, max = 12L, step = 1L, width = "50%")
                    ),
                    column(width = 3,
                           tags$label("Interactive plot"),
@@ -397,7 +402,7 @@ mod_mk_select_ui <- function(id){
 #' @importFrom data.table fread
 #' @importFrom plotly ggplotly renderPlotly plotlyOutput
 #' @importFrom shinyWidgets updateProgressBar
-#' @importFrom vcfR write.vcf
+#' @importFrom vcfR write.vcf read.vcfR
 #' @importFrom htmlwidgets saveWidget
 #' @importFrom svglite svglite
 #' @importFrom DT datatable renderDT
@@ -551,9 +556,9 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     panel_df <- read.csv(paths$panel_path)
     
     vcf <- read.vcfR(paths$vcf_path, verbose = FALSE)
-
+    
     mk_select_items$vcf_input <- vcf  # store original VCF for reference
-
+    
     updateProgressBar(session, "pb_mk_select", value = 50, title = "Loading VCF...")
     result <- load_vcf_panel(panel_df = panel_df, vcf = vcf)
     
@@ -561,15 +566,17 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     
     updateProgressBar(session, "pb_mk_select", value = 80, title = "Calculating marker stats...")
     
+  print(opt_files$cnv_data)
+
     mk_select_items$marker_stats <- get_stats_df(vcf = mk_select_items$vcf_input, 
                                                  bed_data = opt_files$bed_data, 
                                                  win_data = opt_files$cnv_data, 
                                                  dist_ploidy = as.numeric(input$dist_ploidy), 
                                                  filter_samples = NULL)
-
+    
     idx <- which(mk_select_items$marker_stats$CHR %in% mk_select_items$vcf_common@fix[,1] & 
-    mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
-
+                   mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
+    
     mk_select_items$common_marker_stats <- mk_select_items$marker_stats[idx,]
     mk_counts$wgs      <- result$n_wgs
     mk_counts$panel    <- result$n_panel
@@ -594,12 +601,12 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     panel_df <- read.csv(input$panel_file$datapath)
     
     vcf <- read.vcfR(input$mk_select_file$datapath, verbose = FALSE)
-
+    
     mk_select_items$vcf_input <- vcf  # store original VCF for reference
-
+    
     updateProgressBar(session, "pb_mk_select", value = 50, title = "Loading VCF...")
     result <- load_vcf_panel(panel_df = panel_df, vcf = vcf)
-
+    
     mk_select_items$vcf_common <- result$vcf  # store common markers VCF for reference
     
     mk_select_items$marker_stats <- get_stats_df(vcf = mk_select_items$vcf_input, 
@@ -609,10 +616,10 @@ mod_mk_select_server <- function(input, output, session, parent_session){
                                                  filter_samples = colnames(result$vcf@gt)[-1])
     
     idx <- which(mk_select_items$marker_stats$CHR %in% mk_select_items$vcf_common@fix[,1] & 
-    mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
-
+                   mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
+    
     mk_select_items$common_marker_stats <- mk_select_items$marker_stats[idx,]
-
+    
     mk_counts$wgs      <- result$n_wgs
     mk_counts$panel    <- result$n_panel
     mk_counts$common   <- result$n_common
@@ -663,7 +670,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     
     p <- plot_marker_positions(
       marker_stats          = {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
-      if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats},
+        if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats},
       colour_by             = colour_by,
       ploidy                = as.numeric(input$dist_ploidy)
     )
@@ -691,7 +698,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     p <- plot_marker_positions(
       colour_by             = colour_by,
       marker_stats          = {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
-      if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats},
+        if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats},
       ploidy                = as.numeric(input$dist_ploidy) %||% 2L,
       interactive = as.logical(input$dist_interactive)
     )
@@ -727,11 +734,11 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "pb_mk_select", value = 100, title = "Done")
     updateProgressBar(session, "pb_filters",   value = 100, title = "Done")
   })
-    
+  
   # --- Selected Markers table -------------------------------------------------
   output$selected_markers_table <- renderDT({
     df <- {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
-    if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats}
+      if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats}
     if (is.null(df)) {
       # Show a placeholder when no filters have been applied yet
       return(datatable(
@@ -760,7 +767,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     filename = function() paste0("GenoBrew_selected_markers_", Sys.Date(), ".csv"),
     content  = function(file) {
       df <- {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
-            if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats}
+        if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats}
       if (is.null(df)) df <- data.frame()
       write.csv(df, file, row.names = FALSE)
     }

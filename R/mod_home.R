@@ -31,25 +31,14 @@ mod_Home_ui <- function(id){
                               </div>",
                             paste0(
                               "<p>An user-friendly Shiny interface for measuring marker panel efficiency according to previous datasets and visualizing CNV profiles.
-                              It has built-in datasets for <b>Coffee Arabica</b> genomic data exploration and analysis.</p>",
+                              It has built-in datasets for <b>alfalfa</b> genomic data exploration and analysis.</p>",
                               "<p>This application provides two main modules:</p>",
                               "<ul>",
-                              "  <li><b>Select Markers:</b> Compare marker statistics derived from whole-genome ",
-                              "sequencing (WGS) of <b>91 samples + KO34</b> against the <b>40k MolBreeding ",
-                              "Marker Panel</b>. Users can interactively filter and select marker subsets based on ",
-                              "informativity across the 91 samples to support panel optimization and downstream analyses.</li>",
-                              "  <li><b>CNV Profiles:</b> Explore an interactive visualization of copy number variation ",
-                              "(CNV) profiles across the <b>91 samples + KO34</b>, enabling detailed inspection of ",
-                              "structural variation across the genome.</li>",
-                              "</ul>",
-                              "<div style='border-left: 4px solid #17a2b8; background:#f0f8ff; border-radius:4px; ",
-                              "padding: 10px 12px 10px 14px; margin-top: 12px;'>",
-                              "<p style='margin:0'><span style='font-size:15px;'>&#9432;</span> <b>Reference genome note.</b> ",
-                              "The <b>40k MolBreeding Marker Panel</b> was designed based on the ",
-                              "<b><em>Coffea arabica</em> Red Bourbon</b> reference genome ",
-                              "(<a href='https://doi.org/10.1038/s41588-024-01695-w' target='_blank'>Scalabrin et al., 2024</a>). ",
-                              "All genomic coordinates shown in this application refer to that assembly.</p>",
-                              "</div>"
+                              "  <li><b>Select Markers:</b> Compare marker statistics derived from whole-genome sequencing (WGS), 
+                              GBS, or other sequencing technology with a set marker panel.</li>",
+                              "  <li><b>CNV Profiles:</b>Explore interactive visualizations of copy number variation profiles 
+                              across samples. Also visualize relationship statistics for families.</li>",
+                              "</ul>"
                             )
                           ),
                           style = "overflow-y: auto; height: 500px"

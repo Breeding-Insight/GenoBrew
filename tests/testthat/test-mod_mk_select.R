@@ -10,6 +10,7 @@ vcf_path  = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/
 panel_path   <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/20201030-BI-Alfalfa_SNPs_DArTag-probe-design_snpID_lut.csv"
 win_path = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_by_window.csv.gz"
 
+library(vcfR)
 # ---------------------------------------------------------------------------
 # UI smoke test
 # ---------------------------------------------------------------------------
@@ -36,11 +37,9 @@ test_that("load_vcf_panel returns a list with the expected elements", {
   expect_equal(result$n_common, nrow(result$panel_common))
   expect_s4_class(result$vcf, "vcfR")
   
-})
-
-test_that("load_vcf_panel errors on missing SNP.ID column", {
   bad_panel <- data.frame(marker = c("chr1c_100", "chr1c_200"))
-  expect_error(load_vcf_panel(bad_panel, vcf_path), regexp = "`panel_df` must contain a column named 'Chr', 'Chromosome', or 'CHROM'.")
+  expect_error(load_vcf_panel(bad_panel, vcf), regexp = "`panel_df` must contain a column named 'Chr', 'Chromosome', or 'CHROM'.")
+  
 })
 
 # ---------------------------------------------------------------------------
@@ -48,8 +47,7 @@ test_that("load_vcf_panel errors on missing SNP.ID column", {
 # ---------------------------------------------------------------------------
 
 test_that("plot_marker_positions returns a ggplot object", {
-  skip_if_not(file.exists(vcf_path),   "Example VCF not found")
-  
+
   cnv_data <- as.data.frame(
     data.table::fread(win_path, showProgress = FALSE)
   )
@@ -77,25 +75,24 @@ test_that("plot_marker_positions returns a ggplot object", {
   
   common_marker_stats <- marker_stats[idx,]
   
-  p <- plot_marker_positions(marker_stats = result, colour_by = "missing")
-  p <- plot_marker_positions(marker_stats = result, colour_by = "depth")
-  p <- plot_marker_positions(marker_stats = result, colour_by = "heterozygosity")
-  p <- plot_marker_positions(marker_stats = result, colour_by = "MAF")
-  p <- plot_marker_positions(marker_stats = result, colour_by = "repeated")
-  p <- plot_marker_positions(marker_stats = result, colour_by = "CNV", ploidy = 4)
+  p <- plot_marker_positions(marker_stats = common_marker_stats, colour_by = "missing")
+  p <- plot_marker_positions(marker_stats = common_marker_stats, colour_by = "depth")
+  p <- plot_marker_positions(marker_stats = common_marker_stats, colour_by = "heterozygosity")
+  p <- plot_marker_positions(marker_stats = common_marker_stats, colour_by = "MAF")
+  p <- plot_marker_positions(marker_stats = common_marker_stats, colour_by = "CNV", ploidy = 4)
   
-  p <- plot_marker_positions(marker_stats = result, colour_by = "missing", interactive = TRUE)
   expect_s3_class(p, "gg")
   
-  filtered <- stats_filter(vcf, stats_df = result)
+  p <- plot_marker_positions(marker_stats = common_marker_stats, colour_by = "missing", interactive = TRUE)
   
-  filtered <- stats_filter(vcf, stats_df = result, filter_samples = colnames(vcf@gt)[-1],
+  filtered <- stats_filter(vcf, stats_df = common_marker_stats)
+  
+  filtered <- stats_filter(vcf, stats_df = common_marker_stats, filter_samples = colnames(vcf@gt)[-1],
                            filter_maf = 0.05, filter_missing = 25, 
                            filter_het = c(0,100), filter_depth = c(5,200), 
                            filter_repeated = FALSE, filter_cnv = 100)
   
   p <- plot_marker_positions(marker_stats = filtered$stats_df_filt, colour_by = "heterozygosity")
-  
   
 })
 

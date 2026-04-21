@@ -55,10 +55,8 @@ load_vcf_panel <- function(panel_df, vcf, verbose = FALSE) {
   } else {
     pos <- colnames(panel_df)[grepl("Pos|Position|POS", colnames(panel_df))][1]
   }
-  # Check if vcf_path is a URL or a local file
-  if (!file.exists(vcf_path) & !grepl("^https?://", vcf_path)) {
-    stop("VCF file not found: ", vcf_path)
-  }
+  if (!inherits(vcf, "vcfR"))
+    stop("`vcf` must be a vcfR object.")
   
   # ----- counts before intersection ------------------------------------------
   n_wgs   <- nrow(vcf@fix)
@@ -486,6 +484,13 @@ stats_filter <- function(vcf, stats_df, filter_samples = NULL,
                          filter_het = NULL, filter_depth = NULL,
                          filter_repeated = NULL, filter_cnv = NULL){
   
+  if (!inherits(vcf, "vcfR"))
+    stop("`vcf` must be a vcfR object.")
+
+if (!is.data.frame(stats_df))  
+    stop("`stats_df` must be a data.frame.")
+
+  n_markers <- nrow(stats_df)
   keep <- rep(TRUE, n_markers)
   
   # --- Sample filter: apply first so all stats reflect only chosen samples ---
@@ -498,6 +503,10 @@ stats_filter <- function(vcf, stats_df, filter_samples = NULL,
   
   # MAF
   maf_thresh <- filter_maf %||% 0
+
+
+
+
   if (maf_thresh > 0)
     keep <- keep & !is.na(stats_df$MAF) & stats_df$MAF >= maf_thresh
   

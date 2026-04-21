@@ -261,7 +261,7 @@ mod_cnv_ui <- function(id){
                box(
                  title = "CNV Profile", status = "info", solidHeader = FALSE,
                  icon = icon("chart-bar"),
-                 width = 12, collapsible = TRUE, collapsed = TRUE,
+                 width = 12, collapsible = TRUE, collapsed = FALSE,
                  fluidRow(
                    column(width = 3,
                           numericInput(ns("gray_CN"), label = "Gray color CN",
@@ -511,7 +511,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     window_path <- input$cnv_file_window$datapath
     params_path <- if (!is.null(input$cnv_file_params)) input$cnv_file_params$datapath else NULL
 
-    cnv_items$hmm_CN <- read_hmm_CN(marker_path, window_path, params_path)
+    cnv_items$hmm_CN <- read_hmm_CN(by_marker_file = marker_path, by_window_file =  window_path, params_file = params_path)
     updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
   })
   
@@ -616,6 +616,9 @@ mod_cnv_server <- function(input, output, session, parent_session){
     } else {
       samples_to_plot <- input$cnv_filter_samples
     }
+
+    print(str(cnv_items$hmm_CN, 1))
+    print(str(cnv_items$hmm_CN$by_window, 1))
     
     plot <- compare_cn_track(cnv_items$hmm_CN, 
                              samples_to_plot = samples_to_plot, 
