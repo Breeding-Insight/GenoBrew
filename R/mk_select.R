@@ -8,7 +8,7 @@
 #' @param panel_df A \code{data.frame} read from the marker-panel CSV
 #'   (e.g. \code{Coffee_40k_MolBr_SNP.csv}). Must contain a column named
 #'   \code{SNP.ID} with marker identifiers in \code{<CHROM>_<POS>} format.
-#' @param vcf_path Character. Path to the VCF (or VCF.gz) file to read.
+#' @param vcf A \code{vcfR} object containing the VCF data.
 #' @param verbose Logical. Whether to print progress messages (default
 #'   \code{FALSE}).
 #'
@@ -26,7 +26,6 @@
 #'     column order.}
 #' }
 #'
-#' @importFrom vcfR read.vcfR
 #' @export
 #'
 #' @examples
@@ -41,7 +40,7 @@
 #' result$n_common   # markers in common
 #' result$vcf        # vcfR object (common markers only)
 #' }
-load_vcf_panel <- function(panel_df, vcf_path, verbose = FALSE) {
+load_vcf_panel <- function(panel_df, vcf, verbose = FALSE) {
   
   # ----- input checks --------------------------------------------------------
   if (!inherits(panel_df, "data.frame"))
@@ -60,10 +59,6 @@ load_vcf_panel <- function(panel_df, vcf_path, verbose = FALSE) {
   if (!file.exists(vcf_path) & !grepl("^https?://", vcf_path)) {
     stop("VCF file not found: ", vcf_path)
   }
-  
-  # ----- read VCF ------------------------------------------------------------
-  if (verbose) message("Reading VCF: ", vcf_path)
-  vcf <- read.vcfR(vcf_path, verbose = verbose)
   
   # ----- counts before intersection ------------------------------------------
   n_wgs   <- nrow(vcf@fix)

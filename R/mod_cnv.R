@@ -431,7 +431,7 @@ mod_cnv_ui <- function(id){
 #' @importFrom plotly renderPlotly plotlyOutput ggplotly event_data
 #' @import shiny 
 #' @importFrom bs4Dash updatebs4TabItems updateBox
-#' @importFrom magrittr %>%
+#' @importFrom dplyr %>%
 #' @importFrom data.table fread
 #'
 #' @noRd

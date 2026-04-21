@@ -1,14 +1,25 @@
 Package: GenoBrew
-Title: Collection of R Shiny Packages From Breeding Insight
-Version: 0.1.0
-Authors@R: c(person(given='Breeding', 
-                    family='Insight', 
+Title: Interactive Marker Panel Evaluation and CNV Visualization
+Version: 0.0.3
+Authors@R: c(person(given='Cristiane', 
+                    family='Taniguti', 
                     email = 'ctaniguti@ufl.edu', 
-                    role = c('cre', 'aut'))
+                    role = c('cre', 'aut')),
+    person(given='Breeding', 
+                    family='Insight', 
+                    role = c('aut'))
              )
-Description: Provides a interface for users to add modules from BIGapp, Qploidy and AlloMate packages.
+Description: A user-friendly Shiny application for genomic variant analysis
+    with two main modules. The Marker Selection module evaluates VCF files 
+    against marker panel information, visualizing marker distribution across 
+    the genome with filtering options for minor allele frequency (MAF), read 
+    depth, missing data, repeated regions, and copy number differences from 
+    expected ploidy. The CNV Profiles module enables interactive visualization 
+    of copy number variation patterns by sample or family, with integrated 
+    B-allele frequency (BAF) and z-score profile plots for comprehensive 
+    chromosomal aberration assessment.
 License: AGPL (>= 3)
-Depends: R (>= 3.6.0)
+Depends: R (>= 4.1.0)
 biocViews:
 Imports: 
     shiny,
@@ -23,7 +34,16 @@ Imports:
     vcfR,
     ggplot2,
     scales,
-    data.table
+    data.table,
+    Qploidy,
+    dplyr,
+    curl,
+    htmlwidgets,
+    httr,
+    svglite,
+    tidyr
+Remotes:
+    Cristianetaniguti/Qploidy@development
 Encoding: UTF-8
 URL: https://github.com/Cristianetaniguti/Qploidy
 BugReports: https://github.com/Cristianetaniguti/Qploidy/issues
@@ -33,9 +53,7 @@ Suggests:
     covr,
     spelling,
     rmdformats,
-    knitr (>= 1.10),
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Language: en-US
-VignetteBuilder: knitr

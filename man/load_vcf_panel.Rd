@@ -4,14 +4,14 @@
 \alias{load_vcf_panel}
 \title{Load and intersect a WGS VCF with a marker panel}
 \usage{
-load_vcf_panel(panel_df, vcf_path, verbose = FALSE)
+load_vcf_panel(panel_df, vcf, verbose = FALSE)
 }
 \arguments{
 \item{panel_df}{A \code{data.frame} read from the marker-panel CSV
 (e.g. \code{Coffee_40k_MolBr_SNP.csv}). Must contain a column named
 \code{SNP.ID} with marker identifiers in \code{<CHROM>_<POS>} format.}
 
-\item{vcf_path}{Character. Path to the VCF (or VCF.gz) file to read.}
+\item{vcf}{A \code{vcfR} object containing the VCF data.}
 
 \item{verbose}{Logical. Whether to print progress messages (default
 \code{FALSE}).}

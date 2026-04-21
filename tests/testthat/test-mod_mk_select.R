@@ -23,11 +23,9 @@ test_that("mod_mk_select_ui renders without error", {
 # ---------------------------------------------------------------------------
 
 test_that("load_vcf_panel returns a list with the expected elements", {
-  skip_if_not(file.exists(panel_path), "Example panel CSV not found")
-  skip_if_not(file.exists(vcf_path),   "Example VCF not found")
-  
-  panel  <- read.csv(panel_path)
-  result <- load_vcf_panel(panel_df = panel, vcf_path = vcf_path)
+    panel  <- read.csv(panel_path)
+    vcf <- read.vcfR(vcf_path)
+  result <- load_vcf_panel(panel_df = panel, vcf = vcf)
   
   expect_type(result, "list")
   expect_named(result, c("vcf", "n_wgs", "n_panel", "n_common", "panel_common"))
@@ -66,11 +64,18 @@ test_that("plot_marker_positions returns a ggplot object", {
   
   panel  <- read.csv(panel_path)
   
-  results <- load_vcf_panel(panel_df = panel,vcf_path = vcf_path)
+  vcf <- read.vcfR(vcf_path)
+  result <- load_vcf_panel(panel_df = panel, vcf = vcf)
   
-  result <- get_stats_df(vcf = results$vcf,bed_data = NULL, 
+  marker_stats <- get_stats_df(vcf = vcf,bed_data = NULL, 
                          win_data = cnv_data, dist_ploidy = 4, 
                          filter_samples = NULL )
+  
+  vcf_common <- result$vcf
+  
+  idx <- which(marker_stats$CHR %in% vcf_common@fix[,1] & marker_stats$Position %in% vcf_common@fix[,2])
+  
+  common_marker_stats <- marker_stats[idx,]
   
   p <- plot_marker_positions(marker_stats = result, colour_by = "missing")
   p <- plot_marker_positions(marker_stats = result, colour_by = "depth")

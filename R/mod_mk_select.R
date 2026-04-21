@@ -202,6 +202,20 @@ mod_mk_select_ui <- function(id){
                  title = "Marker Filters", status = "success", solidHeader = FALSE,
                  width = 12, collapsible = TRUE, collapsed = FALSE,
                  fluidRow(
+                   column(width = 12,
+                          tags$label(HTML("To be applied on:")),
+                          prettyRadioButtons(
+                            ns("selected_dataset"),
+                            label   = NULL,
+                            choices = c("VCF", "Common Markers"),
+                            selected = "Common Markers",
+                            inline  = TRUE,
+                            status  = "info"
+                          ),
+                          helpText("Filters will be applied and graphics built considering only markers in the VCF file (VCF), or only for the common markers between the VCF and the marker panel (Common Markers).")
+                   ),
+                 ), hr(),
+                 fluidRow(
                    column(width = 6,
                           numericInput(ns("filter_maf"),
                                        label = HTML("Min MAF <small style='color:grey;font-weight:normal'>(higher = fewer, more informative markers)</small>"),
@@ -222,16 +236,16 @@ mod_mk_select_ui <- function(id){
                                       min = 0, max = 100, value = c(0, 100), step = 1, post = "%", width = "70%"),
                           helpText("Keep markers whose observed heterozygosity falls within this range")
                    ),
-                     column(width = 2,
-                            numericInput(ns("dist_ploidy"), label = "Ploidy",
-                                         value = 2, min = 1, max = 10, step = 1, width = "70%"),
-                            helpText("Set the ploidy level for the analysis")
-                     ),
-                     column(width = 4,
-                            numericInput(ns("filter_cnv"),
-                                         label = HTML("Max % CNV \u2260 defined ploidy <small style='color:grey;font-weight:normal'>(lower = fewer CNV-affected genotypes allowed)</small>"),
-                                         value = 100, min = 0, max = 100, step = 1, width = "70%"),
-                            helpText("100 = allow any CNV; 10 = keep markers where \u226410% of genotypes have CNV \u2260 2")
+                   column(width = 2,
+                          numericInput(ns("dist_ploidy"), label = "Ploidy",
+                                       value = 2, min = 1, max = 10, step = 1, width = "70%"),
+                          helpText("Set the ploidy level for the analysis")
+                   ),
+                   column(width = 4,
+                          numericInput(ns("filter_cnv"),
+                                       label = HTML("Max % CNV \u2260 defined ploidy <small style='color:grey;font-weight:normal'>(lower = fewer CNV-affected genotypes allowed)</small>"),
+                                       value = 100, min = 0, max = 100, step = 1, width = "70%"),
+                          helpText("100 = allow any CNV; 10 = keep markers where \u226410% of genotypes have CNV \u2260 2")
                    ),
                  ), hr(),
                  fluidRow(
@@ -407,9 +421,11 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     pos_df       = NULL,
     markerPlot   = NULL,
     snp_stats    = NULL,
-    vcf_result   = NULL,   # list returned by load_vcf_panel
+    vcf_input    = NULL,   # vcfR object for the original input VCF
+    vcf_common  = NULL,    # vcfR object for the common markers VCF
     vcf_filtered = NULL,   # vcfR after applying marker/sample filters
-    marker_stats = NULL    # data.frame for Selected Markers table
+    marker_stats = NULL,    # data.frame for Selected Markers table
+    common_marker_stats = NULL
   )
   
   # --- Optional annotation file storage ---
@@ -534,18 +550,27 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "pb_mk_select", value = 25, title = "Reading panel...")
     panel_df <- read.csv(paths$panel_path)
     
+    vcf <- read.vcfR(paths$vcf_path, verbose = FALSE)
+
+    mk_select_items$vcf_input <- vcf  # store original VCF for reference
+
     updateProgressBar(session, "pb_mk_select", value = 50, title = "Loading VCF...")
-    result <- load_vcf_panel(panel_df = panel_df, vcf_path = paths$vcf_path)
+    result <- load_vcf_panel(panel_df = panel_df, vcf = vcf)
+    
+    mk_select_items$vcf_common <- result$vcf  # store common markers VCF for reference
     
     updateProgressBar(session, "pb_mk_select", value = 80, title = "Calculating marker stats...")
     
-    mk_select_items$marker_stats <- get_stats_df(vcf = result$vcf, 
-                                                  bed_data = opt_files$bed_data, 
+    mk_select_items$marker_stats <- get_stats_df(vcf = mk_select_items$vcf_input, 
+                                                 bed_data = opt_files$bed_data, 
                                                  win_data = opt_files$cnv_data, 
                                                  dist_ploidy = as.numeric(input$dist_ploidy), 
                                                  filter_samples = NULL)
-    
-    mk_select_items$vcf_result <- result
+
+    idx <- which(mk_select_items$marker_stats$CHR %in% mk_select_items$vcf_common@fix[,1] & 
+    mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
+
+    mk_select_items$common_marker_stats <- mk_select_items$marker_stats[idx,]
     mk_counts$wgs      <- result$n_wgs
     mk_counts$panel    <- result$n_panel
     mk_counts$common   <- result$n_common
@@ -568,16 +593,26 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "pb_mk_select", value = 20, title = "Reading panel...")
     panel_df <- read.csv(input$panel_file$datapath)
     
+    vcf <- read.vcfR(input$mk_select_file$datapath, verbose = FALSE)
+
+    mk_select_items$vcf_input <- vcf  # store original VCF for reference
+
     updateProgressBar(session, "pb_mk_select", value = 50, title = "Loading VCF...")
-    result <- load_vcf_panel(panel_df = panel_df, vcf_path = input$mk_select_file$datapath)
+    result <- load_vcf_panel(panel_df = panel_df, vcf = vcf)
+
+    mk_select_items$vcf_common <- result$vcf  # store common markers VCF for reference
     
-    mk_select_items$marker_stats <- get_stats_df(vcf = result$vcf, 
-                                                  bed_data = opt_files$bed_data, 
-                                                  win_data = opt_files$cnv_data, 
+    mk_select_items$marker_stats <- get_stats_df(vcf = mk_select_items$vcf_input, 
+                                                 bed_data = opt_files$bed_data, 
+                                                 win_data = opt_files$cnv_data, 
                                                  dist_ploidy = as.numeric(input$dist_ploidy), 
                                                  filter_samples = colnames(result$vcf@gt)[-1])
     
-    mk_select_items$vcf_result <- result
+    idx <- which(mk_select_items$marker_stats$CHR %in% mk_select_items$vcf_common@fix[,1] & 
+    mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
+
+    mk_select_items$common_marker_stats <- mk_select_items$marker_stats[idx,]
+
     mk_counts$wgs      <- result$n_wgs
     mk_counts$panel    <- result$n_panel
     mk_counts$common   <- result$n_common
@@ -615,7 +650,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
   # --- Marker Distribution plot (static ggplot) --------------------------------
   output$marker_distribution_plot <- renderPlot({
     
-    req(!is.null(active_vcf()), identical(input$dist_interactive, "FALSE"))
+    req(!is.null(mk_select_items$marker_stats), identical(input$dist_interactive, "FALSE"))
     
     updateProgressBar(session, "pb_mk_select", value = 20, title = "Preparing plot data...")
     updateProgressBar(session, "pb_plot",      value = 20, title = "Preparing plot data...")
@@ -627,7 +662,8 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "pb_plot",      value = 60, title = "Rendering plot...")
     
     p <- plot_marker_positions(
-      marker_stats          = if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else mk_select_items$marker_stats,
+      marker_stats          = {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
+      if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats},
       colour_by             = colour_by,
       ploidy                = as.numeric(input$dist_ploidy)
     )
@@ -641,7 +677,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
   # --- Marker Distribution plot (interactive plotly) ---------------------------
   output$marker_distribution_plotly <- renderPlotly({
     
-    req(!is.null(active_vcf()), identical(input$dist_interactive, "TRUE"))
+    req(!is.null(mk_select_items$marker_stats), identical(input$dist_interactive, "TRUE"))
     
     updateProgressBar(session, "pb_mk_select", value = 20, title = "Preparing plot data...")
     updateProgressBar(session, "pb_plot",      value = 20, title = "Preparing plot data...")
@@ -654,7 +690,8 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     
     p <- plot_marker_positions(
       colour_by             = colour_by,
-      marker_stats          = if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else mk_select_items$marker_stats,
+      marker_stats          = {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
+      if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats},
       ploidy                = as.numeric(input$dist_ploidy) %||% 2L,
       interactive = as.logical(input$dist_interactive)
     )
@@ -668,13 +705,13 @@ mod_mk_select_server <- function(input, output, session, parent_session){
   
   # --- Apply Filters -----------------------------------------------------------
   observeEvent(input$apply_filters, {
-    req(!is.null(mk_select_items$marker_stats), !is.null(mk_select_items$vcf_result))
+    req(!is.null(mk_select_items$marker_stats), !is.null(mk_select_items$marker_stats))
     
     updateProgressBar(session, "pb_mk_select", value = 25, title = "Applying filters...")
     updateProgressBar(session, "pb_filters",   value = 25, title = "Applying filters...")
     
-    filtered <- stats_filter(vcf = mk_select_items$vcf_result$vcf, 
-                             stats_df = mk_select_items$marker_stats, 
+    filtered <- stats_filter(vcf = if(input$selected_dataset == "Common markers") mk_select_items$vcf_common else mk_select_items$vcf_input, 
+                             stats_df = if(input$selected_dataset == "Common markers") mk_select_items$common_marker_stats else mk_select_items$marker_stats, 
                              filter_samples = input$filter_samples, 
                              filter_maf = as.numeric(input$filter_maf), 
                              filter_missing = as.numeric(input$filter_missing), 
@@ -690,20 +727,11 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "pb_mk_select", value = 100, title = "Done")
     updateProgressBar(session, "pb_filters",   value = 100, title = "Done")
   })
-  
-  # --- Helper: active vcf (filtered if available, else full) ---
-  active_vcf <- reactive({
-    if (!is.null(mk_select_items$vcf_filtered))
-      mk_select_items$vcf_filtered
-    else if (!is.null(mk_select_items$vcf_result))
-      mk_select_items$vcf_result$vcf
-    else
-      NULL
-  })
-  
+    
   # --- Selected Markers table -------------------------------------------------
   output$selected_markers_table <- renderDT({
-    df <- if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else mk_select_items$marker_stats
+    df <- {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
+    if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats}
     if (is.null(df)) {
       # Show a placeholder when no filters have been applied yet
       return(datatable(
@@ -731,7 +759,8 @@ mod_mk_select_server <- function(input, output, session, parent_session){
   output$download_selected_markers <- downloadHandler(
     filename = function() paste0("GenoBrew_selected_markers_", Sys.Date(), ".csv"),
     content  = function(file) {
-      df <- if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else mk_select_items$marker_stats
+      df <- {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
+            if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats}
       if (is.null(df)) df <- data.frame()
       write.csv(df, file, row.names = FALSE)
     }
@@ -742,7 +771,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     filename = function() paste0("GenoBrew_filtered_markers_", Sys.Date(), ".vcf.gz"),
     content  = function(file) {
       vcf_out <- mk_select_items$vcf_filtered
-      if (is.null(vcf_out)) vcf_out <- mk_select_items$vcf_result$vcf
+      if (is.null(vcf_out) & input$selected_dataset == "Common markers") vcf_out <- mk_select_items$vcf_common else if (is.null(vcf_out)) vcf_out <- mk_select_items$vcf_input
       req(!is.null(vcf_out))
       # Write to a temp path ending in .vcf.gz so vcfR uses gzfile internally
       tmp <- paste0(tempfile(), ".vcf.gz")
@@ -810,12 +839,13 @@ mod_mk_select_server <- function(input, output, session, parent_session){
   
   output$download_vcf <- downloadHandler(
     filename = function() {
-      paste0("BIGapp_VCF_Example_file.vcf.gz")
+      paste0("alfalfa_F1_marker_panel.vcf.gz")
     },
     content = function(file) {
-      ex <- system.file("iris_DArT_VCF.vcf.gz", package = "BIGapp")
-      file.copy(ex, file)
-    })
+      url <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_marker_panel_dataset_publicly_available.vcf.gz"
+      download.file(url, file, mode = "wb")
+    }
+  )
   
   # --- Download: Marker Distribution Plot (static or interactive) ---
   output$download_dist_plot <- downloadHandler(

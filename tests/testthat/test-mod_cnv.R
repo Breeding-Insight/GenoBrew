@@ -11,6 +11,7 @@ window_path   <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/h
 params_path <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_params.rds"
 passport_path <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_passport.csv"
 
+library(vcfR)
 # ---------------------------------------------------------------------------
 # UI smoke test
 # ---------------------------------------------------------------------------
@@ -24,6 +25,7 @@ test_that("mod_cnv_ui renders without error", {
 # ---------------------------------------------------------------------------
 
 test_that("loading a built-in dataset populates cnv_items", {
+  
  hmm_CN <- read_hmm_CN(by_window_file = window_path,
              by_marker_file = marker_path, params_file = params_path)
 
