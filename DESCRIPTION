@@ -40,7 +40,8 @@ Imports:
     htmlwidgets,
     httr,
     svglite,
-    tidyr
+    tidyr,
+    R.utils
 Remotes:
     Cristianetaniguti/Qploidy@development
 Encoding: UTF-8
