@@ -50,7 +50,7 @@ mod_cnv_ui <- function(id){
                                     "<code>*_by_marker.csv</code>, <code>*_by_window.csv</code>, ",
                                     "<code>*_params.rds</code>.<br>",
                                     "<span style='color:#6c757d;'>See ",
-                                    "<a href='https://gabrielgesteira.github.io/Qploidy/' target='_blank'>Qploidy documentation</a>",
+                                    "<a href='https://Cristianetaniguti.github.io/Qploidy/' target='_blank'>Qploidy documentation</a>",
                                     " for details.</span>"
                                   ))
                               )
@@ -302,6 +302,11 @@ mod_cnv_ui <- function(id){
                    )
                  ), br(),
                  fluidRow(
+                   div(style = "background:#eef6fb; border-left:4px solid #17a2b8; border-radius:4px; padding:10px 14px; margin-bottom:10px; font-size:13px;",
+                       HTML(paste0(
+                         "<b>Click on the sample row in the CNV profile plot</b> to view BAF and Z-score profiles for that sample. Hover over the plot to see sample names, CNV states and other informations.<br>"
+                       ))
+                   ),
                    column(width = 12,
                           uiOutput(ns("cnv_compare_plot_ui"))
                    )
@@ -476,15 +481,15 @@ mod_cnv_server <- function(input, output, session, parent_session){
     marker_path <- paths$marker
     window_path <- paths$window
     params_path <- paths$params
-
+    
     req(file.exists(marker_path) | grepl("^https?://", marker_path),
         file.exists(window_path) | grepl("^https?://", window_path),
         file.exists(params_path) | grepl("^https?://", params_path))
-
+    
     cnv_items$hmm_CN <- read_hmm_CN(by_window_file = window_path, 
                                     by_marker_file = marker_path, 
                                     params_file = params_path)
-
+    
     updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
     
   })
@@ -510,7 +515,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     marker_path <- input$cnv_file_marker$datapath
     window_path <- input$cnv_file_window$datapath
     params_path <- if (!is.null(input$cnv_file_params)) input$cnv_file_params$datapath else NULL
-
+    
     cnv_items$hmm_CN <- read_hmm_CN(by_marker_file = marker_path, by_window_file =  window_path, params_file = params_path)
     updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
   })
@@ -616,7 +621,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     } else {
       samples_to_plot <- input$cnv_filter_samples
     }
-
+    
     print(str(cnv_items$hmm_CN, 1))
     print(str(cnv_items$hmm_CN$by_window, 1))
     

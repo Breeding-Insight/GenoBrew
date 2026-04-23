@@ -82,7 +82,7 @@ app_ui <- function(request) {
         ),
         left = div(
           style = "display: flex; align-items: center; height: 100%;",  
-          sprintf("v%s", as.character(utils::packageVersion("familia")))
+          sprintf("v%s", as.character(utils::packageVersion("GenoBrew")))
         )
       ),
       dashboardBody(
