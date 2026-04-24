@@ -14,10 +14,12 @@ mod_help_ui <- function(id){
       column(width=12),
       column(width=12,
                box(title="Select Markers", id = "select_markers_box",width = 12, collapsible = TRUE, collapsed = TRUE, status = "info", solidHeader = TRUE,
-                   "Under development. Please access the tutorial for more information:"                   
+                   "Under development. Please access the tutorial for more information:",
+                    tags$a(href="https://cris-taniguti.shinyapps.io/genobrew/", "GenoBrew Tutorial")
                ),
                 box(title="CNV Profiles", id = "cnv_profiles_box", width = 12, collapsible = TRUE, collapsed = TRUE, status = "success", solidHeader = TRUE,
-                    "Under development. Please access the tutorial for more information:"
+                    "Under development. Please access the tutorial for more information:",
+                    tags$a(href="https://cris-taniguti.shinyapps.io/genobrew/", "GenoBrew Tutorial")
                 )
              )
       ),

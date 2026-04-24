@@ -11,7 +11,7 @@
 
 **GenoBrew** is a user-friendly R Shiny application for measuring marker
 panel efficiency according to dataset, help users optmize markers selection, 
-perform basic relationship analysis, and visualization of copy number variation (CNV) profiles. It
+perform basic relationship analysis, and visualization and curation of copy number variation (CNV) profiles. It
 includes built-in datasets for *alfalfa* genomic data exploration
 and analysis, designed to support breeders and researchers without
 requiring command-line expertise.
@@ -22,7 +22,7 @@ requiring command-line expertise.
   command-line required.
 - **Select Markers module:** Compare marker statistics derived from
   whole-genome sequencing (WGS), GBS, or other sequencing technology with a set marker panel.
-- **CNV Profiles module:** Explore interactive visualizations of copy
+- **CNV Profiles module:** Explore interactive visualizations and curation of copy
   number variation profiles across samples. Also visualize relationship statistics for families.
 - **Built-in datasets:** Includes the Alfalfa F1 population dataset, ready to load for analysis. This dataset is publicly available and validated using the Alfalfa 3k DArTag marker panel.
 - **Upload your own data:** Accepts VCF and CNV files in CSV/TSV/GZ
@@ -53,6 +53,10 @@ Loads a CNV file (or built-in dataset) and visualizes:
 
 ### Getting Started
 
+#### Demo
+
+You can explore GenoBrew features accessing its [shinyapps.io version](https://cris-taniguti.shinyapps.io/genobrew/), but the server has limited resources, for larger datasets you will need to install the app in our local computer. 
+
 #### Local Installation
 
 1. **Install R** (≥ 4.1.0) from [CRAN](https://cran.r-project.org/).
@@ -71,6 +75,10 @@ GenoBrew::run_app()
 ```
 
 4. The GenoBrew interface will open in your default web browser.
+
+#### Tutorial
+
+Access GenoBrew tutorial [here](https://scribehow.com/viewer/GenoBrew_Interactive_Marker_Panel_Evaluation_CNV_Visualization_and_Curation__4uWloBuPT1WlnCvW2UWiTg).
 
 ### Funding
 

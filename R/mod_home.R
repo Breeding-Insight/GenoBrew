@@ -100,7 +100,7 @@ mod_Home_ui <- function(id){
                  style = "text-decoration: none; color: inherit;"
                ),
                a(
-                 href = "file:///Users/cht47/Documents/github/GenoBrew/doc/GenoBrew.html",
+                 href = "https://scribehow.com/viewer/GenoBrew_Interactive_Marker_Panel_Evaluation_CNV_Visualization_and_Curation__4uWloBuPT1WlnCvW2UWiTg",
                  target = "_blank",
                  valueBox(
                    value = NULL,
