@@ -24,13 +24,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libharfbuzz-dev libfribidi-dev
         
-    - name: Cache R packages
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.R_LIBS_USER }}
-        key: ${{ runner.os }}-r-${{ hashFiles('DESCRIPTION') }}
-        restore-keys: ${{ runner.os }}-r-
-        
     - name: Install dependencies
       run: |
         install.packages(c("remotes", "rsconnect"))
@@ -40,22 +33,37 @@ jobs:
     - name: Install package
       run: R CMD INSTALL .
       
-    - name: Deploy to shinyapps.io
+    - name: Debug and deploy
       run: |
+        # Debug: Check if secrets exist (without printing values)
+        cat("Checking secrets...\n")
+        cat("Name length:", nchar(Sys.getenv("SHINYAPPS_NAME")), "\n")
+        cat("Token length:", nchar(Sys.getenv("SHINYAPPS_TOKEN")), "\n")
+        cat("Secret length:", nchar(Sys.getenv("SHINYAPPS_SECRET")), "\n")
+        
+        # Remove any potential whitespace
+        name <- trimws(Sys.getenv("SHINYAPPS_NAME"))
+        token <- trimws(Sys.getenv("SHINYAPPS_TOKEN"))
+        secret <- trimws(Sys.getenv("SHINYAPPS_SECRET"))
+        
+        # Set account info
         rsconnect::setAccountInfo(
-          name = "${{ secrets.SHINYAPPS_NAME }}",
-          token = "${{ secrets.SHINYAPPS_TOKEN }}",
-          secret = "${{ secrets.SHINYAPPS_SECRET }}"
+          name = name,
+          token = token,
+          secret = secret
         )
+        
+        # List accounts to verify
+        accounts <- rsconnect::accounts()
+        print(accounts)
+        
+        # Deploy
         rsconnect::deployApp(
           appDir = ".",
-          appFiles = c(
-            "R/",
-            "inst/",
-            "DESCRIPTION",
-            "NAMESPACE",
-            "app.R"
-          ),
           forceUpdate = TRUE
         )
       shell: Rscript {0}
+      env:
+        SHINYAPPS_NAME: ${{ secrets.SHINYAPPS_NAME }}
+        SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+        SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
