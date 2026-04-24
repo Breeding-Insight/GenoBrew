@@ -25,7 +25,8 @@ jobs:
     - name: Install BiocManager and setup Bioconductor
       run: |
         install.packages("BiocManager")
-        BiocManager::install(version = "3.19", ask = FALSE, update = FALSE)
+        # Let BiocManager choose the appropriate version for this R version
+        BiocManager::install(ask = FALSE, update = FALSE)
         BiocManager::install("multtest", ask = FALSE, update = FALSE)
       shell: Rscript {0}
       
