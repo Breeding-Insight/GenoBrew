@@ -1,3 +1,7 @@
+# GenoBrew 0.0.4
+
+* Add box to edit specific samples CNV estimations and replace/drop in the main dataset
+
 # GenoBrew 0.0.3
 
 * Add alfalfa example file

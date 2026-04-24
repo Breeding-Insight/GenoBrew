@@ -171,7 +171,7 @@ mod_cnv_ui <- function(id){
                           div(style = "display:inline-block; float:right",
                               dropdownButton(
                                 HTML("<b>Input files</b>"),
-                                p(downloadButton(ns("download_cnv_example"), ""), "CNV Example File"),
+                                p(downloadButton(ns("download_cnv_example"), ""), "VCF Example File"),
                                 p(HTML("<b>Parameters description:</b>"), actionButton(ns("goPar"), icon("arrow-up-right-from-square", verify_fa = FALSE))), hr(),
                                 p(HTML("<b>Results description:</b>"),     actionButton(ns("goRes"), icon("arrow-up-right-from-square", verify_fa = FALSE))), hr(),
                                 p(HTML("<b>How to cite:</b>"),             actionButton(ns("goCite"), icon("arrow-up-right-from-square", verify_fa = FALSE))), hr(),
@@ -362,8 +362,10 @@ mod_cnv_ui <- function(id){
                             ),
                             width = "100%"
                           ),
-                          helpText("First sample is selected by default. Choose another or click in the graphic above to update the plot.")
-                   ), br(),
+                   ), 
+                   column(width = 12,
+                          "First sample is selected by default. Choose another or click in the graphic above to update the plot."
+                   ), hr(), hr(),
                    column(width = 3,
                           tags$label("Remove dots"),
                           prettyRadioButtons(
@@ -395,6 +397,122 @@ mod_cnv_ui <- function(id){
                             selected = "FALSE",
                             inline   = TRUE,
                             status   = "info"
+                          )
+                   ), br(), hr(),
+                   column(width = 12,
+                          box(
+                            title = "Adjust HMM parameters for this sample", 
+                            status = "info", 
+                            solidHeader = FALSE,
+                            width = 12, 
+                            collapsible = TRUE, 
+                            collapsed = TRUE,
+                            
+                            # File input on its own row
+                            fluidRow(
+                              column(6,
+                                     fileInput(ns("qploidy_standarize_result"),
+                                               label = HTML("Upload Qploidy standardize results (from function `write_qploidy_standardization`)"),
+                                               accept = c(".tsv.gz"), 
+                                               width = "70%")
+                              ),
+                              column(width = 6,
+                                     textInput(
+                                       ns("cn_grid"),
+                                       label    = "CN range to be tested",
+                                       placeholder = "2,3,4,5",
+                                       value = "",
+                                       width = "70%"
+                                     )
+                              ),
+                            ),
+                            
+                            # Parameters in 2x2 grid
+                            fluidRow(
+                              column(6,
+                                     numericInput(ns("min_snps_per_window"), 
+                                                  label = "Minimum of SNPs per window", 
+                                                  value = NULL,
+                                                  min = 5,
+                                                  width = "70%"
+                                     )
+                              ),
+                              column(6,
+                                     numericInput(ns("exp_ploidy"), 
+                                                  label = "Expected ploidy", 
+                                                  value = NULL, min = 1, max = 20,
+                                                  width = "70%"
+                                                  
+                                     )
+                              )
+                            ),
+                            
+                            fluidRow(
+                              column(6,
+                                     numericInput(ns("baf_weight"), 
+                                                  label = "BAF weight", 
+                                                  min = 0,
+                                                  value = NULL,
+                                                  width = "70%"
+                                     )
+                              ),
+                              column(6,
+                                     prettyRadioButtons(
+                                       ns("z_only"),
+                                       label    = "Uses only z-score likelihoods (ignore BAF distributions)",
+                                       choices  = c("TRUE", "FALSE"),
+                                       selected = "FALSE",
+                                       inline   = TRUE,
+                                       status   = "info",
+                                       width = "70%"
+                                     )
+                              )
+                            ),
+                            column(width = 12,
+                                   actionButton(ns("update_hmm"), "Run analysis", icon = icon("play"),
+                                                class = "btn-success")
+                            ),
+                            fluidRow(
+                              column(width = 12,
+                                     progressBar(id = ns("updated_hmm_bar"), value = 0,
+                                                 title = "", display_pct = FALSE,
+                                                 status = "info", striped = TRUE)
+                              )
+                            ), br(),
+                            fluidRow(
+                              column(width = 2,
+                                     actionButton(ns("add_update"), "Update full results", icon = icon("play"),
+                                                  class = "btn-success")
+                              ),
+                              column(8,
+                                     prettyRadioButtons(
+                                       ns("rm_sample"),
+                                       label    = "Remove sample from analysis",
+                                       choices  = c("TRUE", "FALSE"),
+                                       selected = "FALSE",
+                                       inline   = TRUE,
+                                       status   = "info",
+                                       width = "70%"
+                                     )
+                              )
+                            ),
+                            div(style = "background:#eef6fb; border-left:4px solid #17a2b8; border-radius:4px; padding:10px 14px; margin-bottom:10px; font-size:13px;",
+                                HTML(paste0(
+                                  "<b>Click on Build Plot at CNV Profile</b> to update the multiple samples plot.<br>"
+                                ))
+                            ),
+                            hr(),
+                            column(width = 12,
+                                   downloadButton(ns("download_hmm_files"), "Download HMM Files", class = "btn-primary")
+                            ),
+                            fluidRow(
+                              column(width = 12,
+                                     progressBar(id = ns("download_hmm_bar"), value = 0,
+                                                 title = "", display_pct = FALSE,
+                                                 status = "info", striped = TRUE)
+                              )
+                            )
+                            
                           )
                    )
                  ), br(),
@@ -438,6 +556,7 @@ mod_cnv_ui <- function(id){
 #' @importFrom bs4Dash updatebs4TabItems updateBox
 #' @importFrom dplyr %>%
 #' @importFrom data.table fread
+#' @importFrom utils download.file
 #'
 #' @noRd
 mod_cnv_server <- function(input, output, session, parent_session){
@@ -448,7 +567,10 @@ mod_cnv_server <- function(input, output, session, parent_session){
   # Qploidy HMM data storage
   cnv_items <- reactiveValues(
     hmm_CN     = NULL,   
-    passport_df = NULL
+    passport_df = NULL,
+    updated_hmm_results = NULL,
+    click = NULL,
+    single_sample_plot = NULL
   )
   
   # --- Reactive storage for dataset sample/family metadata ---
@@ -490,6 +612,8 @@ mod_cnv_server <- function(input, output, session, parent_session){
                                     by_marker_file = marker_path, 
                                     params_file = params_path)
     
+    cnv_items$updated_hmm_results <- NULL
+    
     updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
     
   })
@@ -517,6 +641,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     params_path <- if (!is.null(input$cnv_file_params)) input$cnv_file_params$datapath else NULL
     
     cnv_items$hmm_CN <- read_hmm_CN(by_marker_file = marker_path, by_window_file =  window_path, params_file = params_path)
+    cnv_items$updated_hmm_results <- NULL
     updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
   })
   
@@ -622,9 +747,6 @@ mod_cnv_server <- function(input, output, session, parent_session){
       samples_to_plot <- input$cnv_filter_samples
     }
     
-    print(str(cnv_items$hmm_CN, 1))
-    print(str(cnv_items$hmm_CN$by_window, 1))
-    
     plot <- compare_cn_track(cnv_items$hmm_CN, 
                              samples_to_plot = samples_to_plot, 
                              facet_nrow = 1,
@@ -650,28 +772,28 @@ mod_cnv_server <- function(input, output, session, parent_session){
   })
   
   # Simple ggplot click handler - manual coordinate detection
-  observeEvent(input$cnv_plot_click, {
-    if (!is.null(input$cnv_plot_click)) {
-      tryCatch({
-        data <- cnv_profile()@data
-        click_y <- input$cnv_plot_click$y
-        
-        # Get unique samples and their order (bottom to top)
-        samples <- unique(data$Sample)
-        sample_levels <- rev(samples)  # reversed because ggplot plots bottom to top
-        
-        # Find which sample was clicked based on y coordinate
-        sample_index <- round(click_y)
-        
-        if (sample_index >= 1 && sample_index <= length(sample_levels)) {
-          clicked_sample <- sample_levels[sample_index]
-          updatePickerInput(session, "cnv_filter_samples_baf", selected = as.character(clicked_sample))
-        }
-      }, error = function(e) {
-        # Silently handle errors
-      })
-    }
-  })
+  # observeEvent(input$cnv_plot_click, {
+  #   if (!is.null(input$cnv_plot_click)) {
+  #     tryCatch({
+  #       data <- cnv_profile()@data
+  #       click_y <- input$cnv_plot_click$y
+  #       
+  #       # Get unique samples and their order (bottom to top)
+  #       samples <- unique(data$Sample)
+  #       sample_levels <- rev(samples)  # reversed because ggplot plots bottom to top
+  #       
+  #       # Find which sample was clicked based on y coordinate
+  #       sample_index <- round(click_y)
+  #       
+  #       if (sample_index >= 1 && sample_index <= length(sample_levels)) {
+  #         clicked_sample <- sample_levels[sample_index]
+  #         updatePickerInput(session, "cnv_filter_samples_baf", selected = as.character(clicked_sample))
+  #       }
+  #     }, error = function(e) {
+  #       # Silently handle errors
+  #     })
+  #   }
+  # })
   
   # Plotly click handler - try different event source
   observeEvent(event_data("plotly_click"), {
@@ -682,6 +804,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
         # Extract y value which should be the sample name
         if ("y" %in% names(click_data)) {
           clicked_sample <- click_data$y
+          cnv_items$click <- clicked_sample
           updatePickerInput(session, "cnv_filter_samples_baf", selected = as.character(clicked_sample))
         }
       }, error = function(e) {
@@ -692,25 +815,104 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   ######
   
-  baf_z <- reactive({
-    req(cnv_items$hmm_CN, cnv_profile(), input$cnv_filter_samples_baf, !is.null(input$cnv_filter_samples_baf))
+  output$baf_z_plot <- renderPlot({
+    req(!is.null(cnv_items$click) | !is.null(cnv_items$updated_hmm_results) & !is.null(input$cnv_filter_samples_baf))
     updateProgressBar(session, "baf_z_plot_bar", value = 10, title = "CNV profile plot ready.")
-    
-    plot <- plot_cn_track(cnv_items$hmm_CN, 
+    print("click")
+    print(cnv_items$click)
+    print(input$cnv_filter_samples_baf)
+    plot <- plot_cn_track(if(!is.null(cnv_items$updated_hmm_results) & is.null(cnv_items$click)) cnv_items$updated_hmm_results else cnv_items$hmm_CN, 
                           sample_id = input$cnv_filter_samples_baf,
                           summarized = input$summarize == "TRUE",
                           z_by_mean = input$summarize_z == "TRUE",
                           show_window_lines = input$show_windows_lines == "TRUE")
+
+    cnv_items$single_sample_plot <- plot
     
     updateProgressBar(session, "baf_z_plot_bar", value = 100, title = "CNV profile plot ready.")
     
     plot
   })
-  
-  output$baf_z_plot <- renderPlot({
-    req(baf_z())
-    baf_z()
+    
+  standardized <- reactive({
+    req(input$qploidy_standarize_result)
+    updateProgressBar(session, "updated_hmm_bar", value = 10, title = "Reading Qploidy standardization file...")
+    read_qploidy_standardization(input$qploidy_standarize_result$datapath)
   })
+
+  observeEvent(input$update_hmm, {
+    req(cnv_items$hmm_CN, !is.null(input$cnv_filter_samples_baf))
+        
+    updateProgressBar(session, "updated_hmm_bar", value = 30, title = "Running HMM with new parameters...")
+    
+    # Run HMM with new parameters for the selected sample
+    updated_results <- hmm_estimate_CN(
+      qploidy_standarize_result = standardized(),
+      sample_id = input$cnv_filter_samples_baf,      
+      min_snps_per_window = if(is.na(input$min_snps_per_window) | is.null(input$min_snps_per_window) | input$min_snps_per_window == "") NULL else as.numeric(input$min_snps_per_window),
+      exp_ploidy = if(is.na(input$exp_ploidy) | is.null(input$exp_ploidy) | input$exp_ploidy == "") NA else as.numeric(input$exp_ploidy),
+      baf_weight = if(is.na(input$baf_weight) | is.null(input$baf_weight) | input$baf_weight == "") 0.5 else as.numeric(input$baf_weight),
+      z_only = if(is.na(input$z_only) | is.null(input$z_only) | input$z_only == "") FALSE else input$z_only == "TRUE",
+      cn_grid = if (is.na(input$cn_grid) | is.null(input$cn_grid) | input$cn_grid == "") 2:6 else as.numeric(unlist(strsplit(input$cn_grid, ",")))
+    )
+    
+    # Store updated results in reactiveValues for later use
+    cnv_items$updated_hmm_results <- updated_results
+    cnv_items$click <- NULL
+    
+    updateProgressBar(session, "updated_hmm_bar", value = 100, title = "HMM analysis completed.")
+  })
+  
+  observeEvent(input$add_update, {
+    req(cnv_items$hmm_CN, cnv_items$updated_hmm_results)
+    
+    updateProgressBar(session, "updated_hmm_bar", value = 10, title = "Updating full results with new HMM output...")
+    
+    cnv_items$hmm_CN <- update_hmm_CN_multi(cnv_items$hmm_CN, cnv_items$updated_hmm_results, rm_sample = input$rm_sample == "TRUE")
+    cnv_items$updated_hmm_results <- NULL 
+    
+    updateProgressBar(session, "updated_hmm_bar", value = 100, title = "Full results updated.")
+  })
+  
+  output$download_hmm_files <- downloadHandler(
+    filename = function() {
+      paste("updated_hmm_results_", Sys.Date(), ".zip", sep = "")
+    },
+    content = function(file) {
+      req(cnv_items$hmm_CN)
+      
+      # Create a temporary directory to store the files
+      temp_dir <- tempdir()
+      
+     updateProgressBar(session, "download_hmm_bar", value = 10, title = "Writting HMM files...")
+
+      # Save by_window and by_marker results as separate files
+      formatted_date <- format(Sys.Date(), "%m_%d_%Y")
+      write_hmm_CN(cnv_items$hmm_CN, prefix = paste0(temp_dir, "/", formatted_date))
+      
+      updateProgressBar(session, "download_hmm_bar", value = 50, title = "Zipping HMM files...")
+
+      print(list.files(temp_dir, pattern = paste0("^", formatted_date, "_")))
+      # Create a zip file containing both results
+      # Save current directory
+      old_wd <- getwd()
+
+      # Change to temp directory
+      setwd(temp_dir)
+
+      # Create zip with just filenames (no path structure)
+      utils::zip(zipfile = file, 
+                files = list.files(".", pattern = paste0("^", formatted_date, "_")))
+
+      # Restore original directory
+      setwd(old_wd)
+
+      updateProgressBar(session, "download_hmm_bar", value = 100, title = "HMM files ready for download.")
+
+      # Clean up temporary files
+      file.remove(list.files(temp_dir, pattern = paste0("^", formatted_date, "_"), full.names = TRUE))
+    }
+  )
   
   # Help links
   observeEvent(input$goPar, {
@@ -751,12 +953,13 @@ mod_cnv_server <- function(input, output, session, parent_session){
   
   output$download_cnv_example <- downloadHandler(
     filename = function() {
-      paste0("BIGapp_VCF_Example_file.vcf.gz")
+      paste0("alfalfa_F1_marker_panel.vcf.gz")
     },
     content = function(file) {
-      ex <- system.file("iris_DArT_VCF.vcf.gz", package = "BIGapp")
-      file.copy(ex, file)
-    })
+      url <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_marker_panel_dataset_publicly_available.vcf.gz"
+      download.file(url, file, mode = "wb")
+    }
+  )
   
   # Download handler for CNV plot
   output$download_cnv_plot <- downloadHandler(
@@ -794,10 +997,10 @@ mod_cnv_server <- function(input, output, session, parent_session){
       paste("BAF_Zscores_Plot", Sys.Date(), ".", input$baf_image_type, sep = "")
     },
     content = function(file) {
-      req(baf_z())
+      req(cnv_items$single_sample_plot)
       ggsave(
         filename = file,
-        plot = baf_z(),
+        plot = cnv_items$single_sample_plot,
         device = input$baf_image_type,
         dpi = input$baf_image_res,
         width = input$baf_image_width,
