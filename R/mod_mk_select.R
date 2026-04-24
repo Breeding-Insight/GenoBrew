@@ -399,7 +399,7 @@ mod_mk_select_ui <- function(id){
 #' @import ggplot2
 #' @import shiny
 #' @importFrom scales comma_format
-#' @importFrom data.table fread
+#' @importFrom data.table fread fwrite
 #' @importFrom plotly ggplotly renderPlotly plotlyOutput
 #' @importFrom shinyWidgets updateProgressBar
 #' @importFrom vcfR write.vcf read.vcfR
@@ -566,8 +566,6 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     
     updateProgressBar(session, "pb_mk_select", value = 80, title = "Calculating marker stats...")
     
-  print(opt_files$cnv_data)
-
     mk_select_items$marker_stats <- get_stats_df(vcf = mk_select_items$vcf_input, 
                                                  bed_data = opt_files$bed_data, 
                                                  win_data = opt_files$cnv_data, 
@@ -769,7 +767,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
       df <- {if(!is.null(mk_select_items$marker_stats_filtered)) mk_select_items$marker_stats_filtered else 
         if(!is.null(mk_select_items$common_marker_stats)) mk_select_items$common_marker_stats else mk_select_items$marker_stats}
       if (is.null(df)) df <- data.frame()
-      write.csv(df, file, row.names = FALSE)
+      fwrite(df, file, row.names = FALSE)
     }
   )
   
