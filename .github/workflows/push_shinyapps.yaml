@@ -26,6 +26,7 @@ jobs:
       with:
         extra-packages: |
           any::rsconnect
+          any::BiocManager
         needs: |
           rsconnect
       
@@ -40,8 +41,18 @@ jobs:
           secret = "${{ secrets.SHINYAPPS_SECRET }}"
         )
         
+        # Deploy with specific files to avoid deployment issues
         rsconnect::deployApp(
           appDir = ".",
-          forceUpdate = TRUE
+          appFiles = c(
+            "R/",
+            "inst/",
+            "DESCRIPTION",
+            "NAMESPACE", 
+            "app.R"
+          ),
+          appName = "genobrew",
+          forceUpdate = TRUE,
+          lint = FALSE
         )
       shell: Rscript {0}
