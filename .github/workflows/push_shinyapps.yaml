@@ -22,11 +22,17 @@ jobs:
     - name: Setup pandoc
       uses: r-lib/actions/setup-pandoc@v2
       
+    - name: Install BiocManager and setup Bioconductor
+      run: |
+        install.packages("BiocManager")
+        BiocManager::install(version = "3.19", ask = FALSE, update = FALSE)
+        BiocManager::install("multtest", ask = FALSE, update = FALSE)
+      shell: Rscript {0}
+      
     - uses: r-lib/actions/setup-r-dependencies@v2
       with:
         extra-packages: |
           any::rsconnect
-          any::BiocManager
         needs: |
           rsconnect
       
@@ -41,7 +47,6 @@ jobs:
           secret = "${{ secrets.SHINYAPPS_SECRET }}"
         )
         
-        # Deploy with specific files to avoid deployment issues
         rsconnect::deployApp(
           appDir = ".",
           appFiles = c(
