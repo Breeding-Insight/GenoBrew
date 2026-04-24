@@ -1017,7 +1017,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     
     # Print the summary information
     cat(
-      "BIGapp Summary Metrics Summary\n",
+      "GenoBrew Summary Metrics Summary\n",
       "\n",
       paste0("Date: ", Sys.Date()), "\n",
       paste(R.Version()$version.string), "\n",
