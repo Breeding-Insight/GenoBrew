@@ -11,6 +11,15 @@ window_path   <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/h
 params_path <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_params.rds"
 passport_path <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_passport.csv"
 
+
+vcf_path  = "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_optimal_filters.vcf.gz"
+panel_path   <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/Coffee_40k_MolBr_SNP_panel.csv"
+window_path = "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_hmm_CN_by_window.csv.gz"
+marker_path   <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_hmm_CN_by_marker.csv.gz"
+params_path <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_hmm_CN_params.rds"
+passport_path <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/passport_brazil.csv"
+
+
 library(vcfR)
 # ---------------------------------------------------------------------------
 # UI smoke test
@@ -53,13 +62,17 @@ test_that("loading a built-in dataset populates cnv_items", {
   idx <- lapply(rela, function(x) which(x == "Parent"))
   
   parents <- vector()
-  for(i in 1:length(fam_list)) parents[i] <- paste0(fam_list[[i]][idx[[i]]], collapse = " x ")
+  for(i in 1:length(fam_list)) {
+    if(length(idx[[i]]) >0)
+      parents[i] <- paste0(fam_list[[i]][idx[[i]]], collapse = " x ")
+    else parents[i] <- "No parents"
+  }
   
-  fam_select <- as.list(1:length(fam_list))
+  fam_select <- as.list(as.numeric(names(fam_list)))
   names(fam_select) <- parents
   
-  sel <- fam_list[['1']]
-  relat <- rela[['1']]
+  sel <- fam_list[[1]]
+  relat <- rela[[1]]
   
   p <- compare_cn_track(hmm_CN, samples_to_plot = sel)
   

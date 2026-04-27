@@ -572,8 +572,10 @@ mod_mk_select_server <- function(input, output, session, parent_session){
                                                  dist_ploidy = as.numeric(input$dist_ploidy), 
                                                  filter_samples = NULL)
     
-    idx <- which(mk_select_items$marker_stats$CHR %in% mk_select_items$vcf_common@fix[,1] & 
-                   mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
+    id_all <- paste0(mk_select_items$marker_stats$CHR, "_", mk_select_items$marker_stats$Position)
+    id_common <- paste0(mk_select_items$vcf_common@fix[,1], "_", mk_select_items$vcf_common@fix[,2])
+    
+    idx <- which(id_all %in% id_common)
     
     mk_select_items$common_marker_stats <- mk_select_items$marker_stats[idx,]
     mk_counts$wgs      <- result$n_wgs
@@ -613,8 +615,10 @@ mod_mk_select_server <- function(input, output, session, parent_session){
                                                  dist_ploidy = as.numeric(input$dist_ploidy), 
                                                  filter_samples = colnames(result$vcf@gt)[-1])
     
-    idx <- which(mk_select_items$marker_stats$CHR %in% mk_select_items$vcf_common@fix[,1] & 
-                   mk_select_items$marker_stats$Position %in% mk_select_items$vcf_common@fix[,2])
+    id_all <- paste0(mk_select_items$marker_stats$CHR, "_", mk_select_items$marker_stats$Position)
+    id_common <- paste0(mk_select_items$vcf_common@fix[,1], "_", mk_select_items$vcf_common@fix[,2])
+    
+    idx <- which(id_all %in% id_common)
     
     mk_select_items$common_marker_stats <- mk_select_items$marker_stats[idx,]
     
@@ -715,8 +719,22 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "pb_mk_select", value = 25, title = "Applying filters...")
     updateProgressBar(session, "pb_filters",   value = 25, title = "Applying filters...")
     
-    filtered <- stats_filter(vcf = if(input$selected_dataset == "Common markers") mk_select_items$vcf_common else mk_select_items$vcf_input, 
-                             stats_df = if(input$selected_dataset == "Common markers") mk_select_items$common_marker_stats else mk_select_items$marker_stats, 
+    # Print filter settings to console for debugging
+    cat("Applying filters with settings:\n")
+    cat("Selected dataset:", input$selected_dataset, "\n")
+    str(mk_select_items$vcf_common, 1)
+    cat("Selected dataset stats rows:", nrow(mk_select_items$common_marker_stats), "\n")
+    str(mk_select_items$common_marker_stats, 1)
+    cat("Filter samples:", if(!is.null(input$filter_samples)) paste(input$filter_samples, collapse = ", ") else "None", "\n")
+    cat("Filter MAF >", input$filter_maf, "\n")
+    cat("Filter Missing <", input$filter_missing, "%\n")
+    cat("Filter Heterozygosity between", paste(input$filter_het, collapse = " and "), "%\n")
+    cat("Filter Depth between", paste(input$filter_depth, collapse = " and "), "\n")
+    cat("Filter Repeated Regions:", input$filter_repeated, "\n")
+    cat("Filter CNV >", input$filter_cnv, "% of samples with CNV != ploidy\n")
+
+    filtered <- stats_filter(vcf = if(input$selected_dataset == "Common Markers") mk_select_items$vcf_common else mk_select_items$vcf_input, 
+                             stats_df = if(input$selected_dataset == "Common Markers") mk_select_items$common_marker_stats else mk_select_items$marker_stats, 
                              filter_samples = input$filter_samples, 
                              filter_maf = as.numeric(input$filter_maf), 
                              filter_missing = as.numeric(input$filter_missing), 
@@ -776,7 +794,7 @@ mod_mk_select_server <- function(input, output, session, parent_session){
     filename = function() paste0("GenoBrew_filtered_markers_", Sys.Date(), ".vcf.gz"),
     content  = function(file) {
       vcf_out <- mk_select_items$vcf_filtered
-      if (is.null(vcf_out) & input$selected_dataset == "Common markers") vcf_out <- mk_select_items$vcf_common else if (is.null(vcf_out)) vcf_out <- mk_select_items$vcf_input
+      if (is.null(vcf_out) & input$selected_dataset == "Common Markers") vcf_out <- mk_select_items$vcf_common else if (is.null(vcf_out)) vcf_out <- mk_select_items$vcf_input
       req(!is.null(vcf_out))
       # Write to a temp path ending in .vcf.gz so vcfR uses gzfile internally
       tmp <- paste0(tempfile(), ".vcf.gz")

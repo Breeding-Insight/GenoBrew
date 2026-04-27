@@ -676,11 +676,16 @@ mod_cnv_server <- function(input, output, session, parent_session){
     rela      <- split(df_long$generation, df_long$fam)
     
     idx <- lapply(rela, function(x) which(x == "Parent"))
+
+     parents <- vector()
+  for(i in 1:length(fam_list)) {
+    if(length(idx[[i]]) >0)
+      parents[i] <- paste0(fam_list[[i]][idx[[i]]], collapse = " x ")
+    else parents[i] <- "No parents"
+  }
     
-    parents <- vector()
-    for(i in 1:length(fam_list)) parents[i] <- paste0(fam_list[[i]][idx[[i]]], collapse = " x ")
-    
-    fam_select <- as.list(1:length(fam_list))
+  fam_select <- as.list(as.numeric(names(fam_list)))
+
     names(fam_select) <- parents
     choices$families <- fam_select
     choices$sample_family_map <- fam_list

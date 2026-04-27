@@ -10,7 +10,9 @@ vcf_path  = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/
 panel_path   <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/20201030-BI-Alfalfa_SNPs_DArTag-probe-design_snpID_lut.csv"
 win_path = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_by_window.csv.gz"
 
+
 library(vcfR)
+library(data.table)
 # ---------------------------------------------------------------------------
 # UI smoke test
 # ---------------------------------------------------------------------------
@@ -26,8 +28,29 @@ test_that("mod_mk_select_ui renders without error", {
 test_that("load_vcf_panel returns a list with the expected elements", {
     panel  <- read.csv(panel_path)
     vcf <- read.vcfR(vcf_path)
-  result <- load_vcf_panel(panel_df = panel, vcf = vcf)
-  
+    cnv_data <- as.data.frame(
+      fread(win_path, showProgress = FALSE)
+    )
+    dist_ploidy <- 2
+    
+    vcf_input <- vcf
+    result <- load_vcf_panel(panel_df = panel, vcf = vcf)
+    
+    vcf_common <- result$vcf
+    
+    marker_stats <- GenoBrew:::get_stats_df(vcf = vcf_input, 
+                                                 bed_data = NULL, 
+                                                 win_data = cnv_data, 
+                                                 dist_ploidy = as.numeric(dist_ploidy), 
+                                                 filter_samples = colnames(vcf_input@gt)[-1])
+    
+    id_all <- paste0(marker_stats$CHR, "_", marker_stats$Position)
+    id_common <- paste0(vcf_common@fix[,1], "_", vcf_common@fix[,2])
+    
+    idx <- which(id_all %in% id_common)
+    
+    common_marker_stats <- marker_stats[idx,]
+    
   expect_type(result, "list")
   expect_named(result, c("vcf", "n_wgs", "n_panel", "n_common", "panel_common"))
   expect_equal(result$n_panel, nrow(panel))
