@@ -11,15 +11,6 @@ window_path   <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/h
 params_path <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_params.rds"
 passport_path <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_passport.csv"
 
-
-vcf_path  = "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_optimal_filters.vcf.gz"
-panel_path   <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/Coffee_40k_MolBr_SNP_panel.csv"
-window_path = "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_hmm_CN_by_window.csv.gz"
-marker_path   <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_hmm_CN_by_marker.csv.gz"
-params_path <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/100k_Brazil_hmm_CN_params.rds"
-passport_path <- "~/Documents/species/coffee/Coffee_WGS_analysis/data/GenoBrew_data/Brazil/passport_brazil.csv"
-
-
 library(vcfR)
 # ---------------------------------------------------------------------------
 # UI smoke test
