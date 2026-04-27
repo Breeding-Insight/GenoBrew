@@ -168,7 +168,7 @@ mod_cnv_ui <- function(id){
                  ),
                  fluidRow(
                    column(width = 12,
-                          div(style = "display:inline-block; float:right",
+                          div(style = "display:inline-block; float:left",
                               dropdownButton(
                                 HTML("<b>Input files</b>"),
                                 p(downloadButton(ns("download_cnv_example"), ""), "VCF Example File"),
@@ -926,10 +926,10 @@ mod_cnv_server <- function(input, output, session, parent_session){
                       selected = "help")
     
     # select specific tab
-    updateTabsetPanel(session = parent_session, inputId = "Genomic_cnv_tabset",
-                      selected = "Genomic_cnv_par")
+    updateTabsetPanel(session = parent_session, inputId = "CNV_profiles_tabset",
+                      selected = "CNV_profiles_par")
     # expand specific box
-    updateBox(id = "Genomic_cnv_box", action = "toggle", session = parent_session)
+    updateBox(id = "cnv_profiles_box", action = "toggle", session = parent_session)
   })
   
   observeEvent(input$goRes, {
@@ -938,10 +938,10 @@ mod_cnv_server <- function(input, output, session, parent_session){
                       selected = "help")
     
     # select specific tab
-    updateTabsetPanel(session = parent_session, inputId = "Genomic_cnv_tabset",
-                      selected = "Genomic_cnv_results")
+    updateTabsetPanel(session = parent_session, inputId = "CNV_profiles_tabset",
+                      selected = "CNV_profiles_results")
     # expand specific box
-    updateBox(id = "Genomic_cnv_box", action = "toggle", session = parent_session)
+    updateBox(id = "cnv_profiles_box", action = "toggle", session = parent_session)
   })
   
   observeEvent(input$goCite, {
@@ -950,10 +950,10 @@ mod_cnv_server <- function(input, output, session, parent_session){
                       selected = "help")
     
     # select specific tab
-    updateTabsetPanel(session = parent_session, inputId = "Genomic_cnv_tabset",
-                      selected = "Genomic_cnv_cite")
+    updateTabsetPanel(session = parent_session, inputId = "CNV_profiles_tabset",
+                      selected = "CNV_profiles_cite")
     # expand specific box
-    updateBox(id = "Genomic_cnv_box", action = "toggle", session = parent_session)
+    updateBox(id = "cnv_profiles_box", action = "toggle", session = parent_session)
   })
   
   output$download_cnv_example <- downloadHandler(

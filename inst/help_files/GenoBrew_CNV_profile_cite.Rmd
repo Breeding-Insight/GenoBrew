@@ -1,5 +1,5 @@
 ---
-title: "GenoBrew_selected_markers_cite"
+title: "GenoBrew_CNV_profile_cite"
 output: html_document
 ---
 
@@ -12,6 +12,3 @@ publications as follows:
 
 Its manuscript is currently in preparation. Once the manuscript is published, 
 please update your citation to also add the final publication details.
-
-
-

@@ -183,7 +183,7 @@ mod_mk_select_ui <- function(id){
                  ),  # end fluidRow (dataset info)
                  fluidRow(
                    column(width = 12,
-                          div(style="display:inline-block; float:right",dropdownButton(
+                          div(style="display:inline-block; float:left",dropdownButton(
                             HTML("<b>Input files</b>"),
                             p(downloadButton(ns('download_vcf'),""), "VCF Example File"),
                             p(HTML("<b>Parameters description:</b>"), actionButton(ns("goPar"), icon("arrow-up-right-from-square", verify_fa = FALSE) )), hr(),
@@ -830,10 +830,10 @@ mod_mk_select_server <- function(input, output, session, parent_session){
                       selected = "help")
     
     # select specific tab
-    updateTabsetPanel(session = parent_session, inputId = "Genomic_mk_select_tabset",
-                      selected = "Genomic_mk_select_par")
+    updateTabsetPanel(session = parent_session, inputId = "Select_markers_tabset",
+                      selected = "Select_markers_par")
     # expand specific box
-    updateBox(id = "Genomic_mk_select_box", action = "toggle", session = parent_session)
+    updateBox(id = "select_markers_box", action = "toggle", session = parent_session)
   })
   
   observeEvent(input$goRes, {
@@ -842,10 +842,10 @@ mod_mk_select_server <- function(input, output, session, parent_session){
                       selected = "help")
     
     # select specific tab
-    updateTabsetPanel(session = parent_session, inputId = "Genomic_mk_select_tabset",
-                      selected = "Genomic_mk_select_results")
+    updateTabsetPanel(session = parent_session, inputId = "Select_markers_tabset",
+                      selected = "Select_markers_results")
     # expand specific box
-    updateBox(id = "Genomic_mk_select_box", action = "toggle", session = parent_session)
+    updateBox(id = "select_markers_box", action = "toggle", session = parent_session)
   })
   
   observeEvent(input$goCite, {
@@ -854,10 +854,10 @@ mod_mk_select_server <- function(input, output, session, parent_session){
                       selected = "help")
     
     # select specific tab
-    updateTabsetPanel(session = parent_session, inputId = "Genomic_mk_select_tabset",
-                      selected = "Genomic_mk_select_cite")
+    updateTabsetPanel(session = parent_session, inputId = "Select_markers_tabset",
+                      selected = "Select_markers_cite")
     # expand specific box
-    updateBox(id = "Genomic_mk_select_box", action = "toggle", session = parent_session)
+    updateBox(id = "select_markers_box", action = "toggle", session = parent_session)
   })
   
   output$download_vcf <- downloadHandler(

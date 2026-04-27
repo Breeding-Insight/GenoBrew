@@ -105,7 +105,12 @@ Sample6	F2  Sample4 Sample5			1,2
 Sample7	F2  Sample4 Sample5			1,2
 ```
 
-## Qploidy Standardized File
+## Re-run HMM for specific sample changing parameters
+
+Within the box "Adjust HMM parameters for this sample", users can re-run the HMM for a 
+specific sample by changing the parameters and clicking the "Run analysis" button. Input required:
+
+### Qploidy Standardized File
 
 Standardized marker-level data (e.g., normalized read depth, B-allele frequency, etc.), 
 used as input for CN estimation. Columns include:
@@ -117,4 +122,11 @@ used as input for CN estimation. Columns include:
 - **R**: Total counts for the marker
 - **ratio**: Ratio (Alternative/(Alternative + Reference)) value for the marker
 
+GenoBrew will run Qploidy2 `hmm_estimate_CN()` function using the standardized data and the specified 
+parameters, and will update the CNV profile plot and BAF/Z-scores visualizations accordingly. For
+detailed information about the parameters, please refer to the Qploidy2 documentation for `?hmm_estimate_CN`.
 
+The feature can be used multiple times to edit different samples. The button "Update full results" will 
+update the HMM results files (by marker, by window and parameters) with the new results from the 
+re-run analysis. The button should be clicked after you have re-run the HMM for each sample you 
+wanted to edit, and before downloading the updated files.
