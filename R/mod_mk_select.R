@@ -419,7 +419,7 @@ mod_mk_select_ui <- function(id) {
                   style = "float:left",
                   dropdownButton(
                     tags$h3("Save Marker Distribution"),
-                    selectInput(ns("dist_image_type"), "File Type", choices = c("jpeg", "tiff", "png", "svg"), selected = "jpeg"),
+                    selectInput(ns("dist_image_type"), "File Type", choices = c("jpeg", "tiff", "png"), selected = "jpeg"),
                     sliderInput(ns("dist_image_res"), "Resolution", value = 300, min = 50, max = 1000, step = 50),
                     sliderInput(ns("dist_image_width"), "Width", value = 10, min = 1, max = 20, step = 0.5),
                     sliderInput(ns("dist_image_height"), "Height", value = 6, min = 1, max = 20, step = 0.5),
@@ -475,7 +475,6 @@ mod_mk_select_ui <- function(id) {
 #' @importFrom shinyWidgets updateProgressBar
 #' @importFrom vcfR write.vcf read.vcfR
 #' @importFrom htmlwidgets saveWidget
-#' @importFrom svglite svglite
 #' @importFrom DT datatable renderDT
 #' @importFrom shinyalert shinyalert
 #'
@@ -1066,21 +1065,16 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
           ploidy       = ploidy_val,
           interactive  = FALSE
         )
-        if (ext == "svg") {
-          svglite(file, width = width, height = height)
-          print(p)
-          dev.off()
-        } else {
-          ggsave(
-            filename = file,
-            plot = p,
-            device = ext,
-            width = width,
-            height = height,
-            units = "in",
-            dpi = res
-          )
-        }
+
+        ggsave(
+          filename = file,
+          plot = p,
+          device = ext,
+          width = width,
+          height = height,
+          units = "in",
+          dpi = res
+        )
       }
     }
   )

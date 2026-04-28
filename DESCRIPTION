@@ -46,9 +46,9 @@ Imports:
     curl,
     htmlwidgets,
     httr,
-    svglite,
     tidyr,
-    R.utils
+    R.utils,
+    markdown
 Remotes:
     Cristianetaniguti/Qploidy@development
 Encoding: UTF-8
