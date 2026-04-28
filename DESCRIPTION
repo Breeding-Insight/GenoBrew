@@ -35,6 +35,7 @@ Imports:
     golem,
     shinyWidgets,
     shinydisconnect,
+    shinyalert,
     plotly,
     vcfR,
     ggplot2,

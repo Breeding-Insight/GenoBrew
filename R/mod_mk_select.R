@@ -477,6 +477,7 @@ mod_mk_select_ui <- function(id) {
 #' @importFrom htmlwidgets saveWidget
 #' @importFrom svglite svglite
 #' @importFrom DT datatable renderDT
+#' @importFrom shinyalert shinyalert
 #'
 #' @noRd
 mod_mk_select_server <- function(input, output, session, parent_session) {
@@ -629,7 +630,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
     updateProgressBar(session, "pb_mk_select", value = 5, title = "Checking inputs...")
 
     if (is.na(input$dist_ploidy)) {
-      shinyalert::shinyalert(
+      shinyalert(
         title = "Ploidy not defined",
         text = "Please enter the ploidy of your samples to ensure accurate marker statistics and filtering.",
         type = "error"
@@ -694,7 +695,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
     updateProgressBar(session, "pb_mk_select", value = 5, title = "Checking inputs...")
 
     if (is.na(input$dist_ploidy)) {
-      shinyalert::shinyalert(
+      shinyalert(
         title = "Ploidy not defined",
         text = "Please enter the ploidy of your samples to ensure accurate marker statistics and filtering.",
         type = "error"

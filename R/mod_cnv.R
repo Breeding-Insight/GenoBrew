@@ -557,6 +557,7 @@ mod_cnv_ui <- function(id){
 #' @importFrom dplyr %>%
 #' @importFrom data.table fread
 #' @importFrom utils download.file
+#' @importFrom shinyalert shinyalert
 #'
 #' @noRd
 mod_cnv_server <- function(input, output, session, parent_session){
@@ -732,7 +733,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "cnv_plot", value = 0, title = "Building CNV profile plot...")
     
     if(is.na(input$gray_CN)) {
-      shinyalert::shinyalert(
+      shinyalert(
         title = "Gray color CN not set",
         text = "Please specify a CN state to be colored in gray (e.g. 2 for diploid). This is important for better visualization of CNV states. You can change this parameter later and update the plot.",
         type = "error"
