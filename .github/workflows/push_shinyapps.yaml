@@ -22,12 +22,17 @@ jobs:
     - name: Setup pandoc
       uses: r-lib/actions/setup-pandoc@v2
       
-    - name: Install BiocManager and setup Bioconductor
+    - name: Install BiocManager and basic packages
       run: |
-        install.packages("BiocManager")
-        # Let BiocManager choose the appropriate version for this R version
+        install.packages(c("BiocManager", "remotes", "rsconnect"))
         BiocManager::install(ask = FALSE, update = FALSE)
         BiocManager::install("multtest", ask = FALSE, update = FALSE)
+      shell: Rscript {0}
+      
+    - name: Install GitHub remotes first
+      run: |
+        # Install the GitHub remote separately to avoid timeout issues
+        remotes::install_github("Cristianetaniguti/Qploidy@development", dependencies = TRUE)
       shell: Rscript {0}
       
     - uses: r-lib/actions/setup-r-dependencies@v2
