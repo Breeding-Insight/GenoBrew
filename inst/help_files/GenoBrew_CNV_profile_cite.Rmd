@@ -3,12 +3,11 @@ title: "GenoBrew_CNV_profile_cite"
 output: html_document
 ---
 
-# Citation Guidelines
+* Citation Guidelines
 
-Thank you for using GenoBrew! Please cite our RRID (Research Resource Identifiers) in your 
+Thank you for using GenoBrew! Please cite in your 
 publications as follows:
 
-* RRID:SCR_028314
-
-Its manuscript is currently in preparation. Once the manuscript is published, 
-please update your citation to also add the final publication details.
+Taniguti, C. H., Chinchilla-Vargas, J. <br>
+GenoBrew: Interactive Marker Panel Evaluation and CNV Visualization <br>
+RRID: SCR_028314

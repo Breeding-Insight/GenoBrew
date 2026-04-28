@@ -265,7 +265,7 @@ mod_cnv_ui <- function(id){
                  fluidRow(
                    column(width = 3,
                           numericInput(ns("gray_CN"), label = "Gray color CN",
-                                       value = 2L, min = 1L, max = 12L, step = 1L, width = "50%")
+                                       value = NA, min = 1L, max = 12L, step = 1L, width = "50%")
                    ),                   
                    column(width = 3,
                           tags$label("Interactive plot"),
@@ -640,7 +640,16 @@ mod_cnv_server <- function(input, output, session, parent_session){
     window_path <- input$cnv_file_window$datapath
     params_path <- if (!is.null(input$cnv_file_params)) input$cnv_file_params$datapath else NULL
     
-    cnv_items$hmm_CN <- read_hmm_CN(by_marker_file = marker_path, by_window_file =  window_path, params_file = params_path)
+    tryCatch(
+      {
+        cnv_items$hmm_CN <- read_hmm_CN(by_marker_file = marker_path, by_window_file =  window_path, params_file = params_path)
+      },
+      error = function(e) {
+        shinyalert("Error", e$message, type = "error")
+        return()
+      }
+    )
+
     cnv_items$updated_hmm_results <- NULL
     updateProgressBar(session, "pb_cnv", value = 50, title = "Qploidy HMM results loaded.")
   })
@@ -661,39 +670,24 @@ mod_cnv_server <- function(input, output, session, parent_session){
     updateProgressBar(session, "pb_cnv", value = 95, title = "Updating family-sample mapping...")
     
     df <- cnv_items$passport_df
-    # Quality check: report any mismatches between passport and VCF sample names
-    samples <- unique(cnv_items$hmm_CN$by_window$Sample)
-    if(length(which(!df$ID %in% samples)) > 0) df <- df[-which(!df$ID %in% samples),]
-    
-    # Reshape passport to long format so multi-family individuals are expanded
-    df_long <- df %>%
-      mutate(fam = as.character(fam)) %>%
-      separate_rows(fam, sep = ",") %>%
-      mutate(fam = as.integer(fam))
-    
-    # Build per-family sample lists and generation labels
-    fam_list <- split(df_long$ID,          df_long$fam)
-    rela      <- split(df_long$generation, df_long$fam)
-    
-    idx <- lapply(rela, function(x) which(x == "Parent"))
 
-     parents <- vector()
-  for(i in 1:length(fam_list)) {
-    if(length(idx[[i]]) >0)
-      parents[i] <- paste0(fam_list[[i]][idx[[i]]], collapse = " x ")
-    else parents[i] <- "No parents"
-  }
-    
-  fam_select <- as.list(as.numeric(names(fam_list)))
+    tryCatch(
+      {
+        passport_prep <- prepare_passport(cnv_items$passport_df, cnv_items$hmm_CN$by_window)
+      },
+      error = function(e) {
+        shinyalert("Error", e$message, type = "error")
+        return()
+      }
+    )
 
-    names(fam_select) <- parents
-    choices$families <- fam_select
-    choices$sample_family_map <- fam_list
-    choices$relations <- rela
+    choices$families <- passport_prep$fam_select
+    choices$sample_family_map <- passport_prep$fam_list
+    choices$relations <- passport_prep$rela
     # Update sample picker choices
     updatePickerInput(session, "cnv_filter_families",
-                      choices = fam_select,
-                      selected = fam_select)
+                      choices = passport_prep$fam_select,
+                      selected = passport_prep$fam_select)
   })
   
   # Preview samples belonging to selected families
@@ -737,7 +731,15 @@ mod_cnv_server <- function(input, output, session, parent_session){
     req(cnv_items$hmm_CN)
     updateProgressBar(session, "cnv_plot", value = 0, title = "Building CNV profile plot...")
     
-    
+    if(is.na(input$gray_CN)) {
+      shinyalert::shinyalert(
+        title = "Gray color CN not set",
+        text = "Please specify a CN state to be colored in gray (e.g. 2 for diploid). This is important for better visualization of CNV states. You can change this parameter later and update the plot.",
+        type = "error"
+      )
+      return()
+    }
+
     # Determine which tab is active for sample selection
     samples_to_plot <- NULL
     if (!is.null(input$sample_select_tabs) && input$sample_select_tabs == "by_family") {

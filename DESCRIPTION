@@ -1,13 +1,19 @@
 Package: GenoBrew
 Title: Interactive Marker Panel Evaluation and CNV Visualization
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: c(person(given='Cristiane', 
                     family='Taniguti', 
                     email = 'ctaniguti@ufl.edu', 
                     role = c('cre', 'aut')),
+            person(given='Josue', 
+                    family='Chinchilla-Vargas',  
+                    role = c('rev','ctb')),
+            person(given='Alexandra', 
+                    family='Casa', 
+                    role = c('dtc'))
     person(given='Breeding', 
                     family='Insight', 
-                    role = c('aut'))
+                    role = c('cph','aut'))
              )
 Description: A user-friendly Shiny application for genomic variant analysis
     with two main modules. The Marker Selection module evaluates VCF files 

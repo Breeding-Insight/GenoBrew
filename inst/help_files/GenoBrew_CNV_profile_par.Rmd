@@ -3,9 +3,7 @@ title: "GenoBrew_CNV_profile_par"
 output: html_document
 ---
 
-# Supported Input Types for GenoBrew CNV Profile
-
-## HMM Results by Marker
+### **HMM Results by Marker**
 
 HMM-based copy number (CN) estimates for each marker (variant site) in the 100k marker panel. 
 Columns include:
@@ -28,7 +26,7 @@ Columns include:
 - **post_max**: Maximum posterior probability for the copy number call
 
 
-## Qploidy2 HMM Results by Window
+## **Qploidy2 HMM Results by Window**
 
 One of the files produced by Qploidy2 function `write_hmm_CN()`. It is the result from HMM-based copy 
 number estimates summarized in genomic windows (e.g., 100kb or 1Mb bins). 
@@ -53,7 +51,7 @@ Columns include:
 - **post_CN6**: Posterior probability for copy number 6
 
 
-## HMM Parameters
+### **HMM Parameters**
 
 RDS (R serialized) file containing the parameters and model objects used for HMM CN estimation. 
 It is composed of a list with each item by sample. The following HMM parameters are described:
@@ -82,15 +80,15 @@ It is composed of a list with each item by sample. The following HMM parameters 
 - **uniform_weight**: Weight for the uniform distribution
 
 
-## Passport File
+## **Passport File**
 
 Contains pedigree information for each sample. Columns include:
 
-- **ID**: Sample identifier
-- **generation**: Generation or cohort information
-- **Female.Parent**: Identifier for the female parent
-- **Male.Parent**: Identifier for the male parent
-- **fam**: Family or group identifier
+- **ID** or **SampleID** or **Sample**: Sample identifier
+- **generation** or **cohort**: Generation or cohort information filled with "progeny", "parent"
+- **Female.Parent** or **Mother** or **P1**: Identifier for the female parent
+- **Male.Parent** or **Father** or **P2**: Identifier for the male parent
+- **fam** or **familia** or **group** or **relatives**: Family or group identifier
 
 Example:
 
@@ -105,12 +103,12 @@ Sample6	F2  Sample4 Sample5			1,2
 Sample7	F2  Sample4 Sample5			1,2
 ```
 
-## Re-run HMM for specific sample changing parameters
+## **Re-run HMM for specific sample changing parameters**
 
 Within the box "Adjust HMM parameters for this sample", users can re-run the HMM for a 
 specific sample by changing the parameters and clicking the "Run analysis" button. Input required:
 
-### Qploidy Standardized File
+### **Qploidy Standardized File**
 
 Standardized marker-level data (e.g., normalized read depth, B-allele frequency, etc.), 
 used as input for CN estimation. Columns include:

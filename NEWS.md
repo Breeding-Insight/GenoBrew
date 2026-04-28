@@ -1,3 +1,8 @@
+# GenoBrew 0.0.5
+
+* Add help pages
+* Add input checks with shinyalert messages
+
 # GenoBrew 0.0.4
 
 * Add box to edit specific samples CNV estimations and replace/drop in the main dataset

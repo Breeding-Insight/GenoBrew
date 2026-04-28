@@ -2,15 +2,14 @@
 title: "GenoBrew_selected_markers_res"
 output: html_document
 ---
-# Selected Markers Results
 
-## Marker Distribution Plot
+### **Marker Distribution Plot**
 
 The **Marker Distribution** plot provides a visual representation of the markers. 
 By default, when data is loaded, the plot displays the common markers between the SNP panel 
 and the VCF file. However, users can switch to view the entire VCF file and apply filters as needed.
 
-### Available Filters
+#### **Available Filters**
 
 - **Min MAF**: Minimum Minor Allele Frequency
 - **% Heterozygosity**: Filter based on the percentage of heterozygous samples for each marker
@@ -20,7 +19,7 @@ and the VCF file. However, users can switch to view the entire VCF file and appl
 - **Avoid Repeated Regions**: Exclude markers located in repetitive genomic regions
 - **Samples**: Apply filters based on specific samples
 
-### Interactive Features
+#### **Interactive Features**
 
 The plot is interactive and powered by Plotly. Hovering over markers provides detailed information, including:
 
@@ -32,19 +31,19 @@ The plot is interactive and powered by Plotly. Hovering over markers provides de
 - Percentage of copy number variations different from the ploidy
 - Presence in repeated regions
 
-### Export Options
+### **Export Options**
 
-#### Image Export
+##### **Image Export**
 
 Users can save the plot in various formats, including JPEG, TIFF, SVG, and PNG, by 
 clicking the **Save** button.
 
-#### Marker Statistics Export
+##### **Marker Statistics Export**
 
 The marker statistics table can be downloaded as a CSV file by clicking 
 the **Save Table (.csv)** button within the Selected Markers box. 
 
-#### Filtered VCF Export
+##### **Filtered VCF Export**
 
 The filtered VCF file, containing only the selected markers, can be downloaded by clicking
 the **Save Filtered VCF** button. This file includes only the markers that meet the applied 
