@@ -9,6 +9,7 @@
 vcf_path  = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_marker_panel_dataset_publicly_available.vcf.gz"
 panel_path   <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/20201030-BI-Alfalfa_SNPs_DArTag-probe-design_snpID_lut.csv"
 win_path = "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_f1_hmm_CN_estimation_by_window.csv.gz"
+passport_path <- "https://github.com/Breeding-Insight/BIGapp-PanelHub/raw/refs/heads/long_seq/alfalfa/GenoBrew_example/alfalfa_F1_passport.csv"
 
 
 library(vcfR)
@@ -35,6 +36,12 @@ test_that("load_vcf_panel returns a list with the expected elements", {
     
     vcf_input <- vcf
     result <- load_vcf_panel(panel_df = panel, vcf = vcf)
+    
+    error_csv <- read.csv(passport_path)
+
+    expect_error(load_vcf_panel(panel_df = error_csv, vcf = vcf), regexp = "`panel_df` must contain a column named 'Chr', 'Chromosome', or 'CHROM'.")
+    
+    expect_error(load_vcf_panel(panel_df = cnv_data, vcf = vcf), regexp = "`panel_df` must contain a column named 'Pos', 'Position', or 'POS'.")
     
     vcf_common <- result$vcf
     

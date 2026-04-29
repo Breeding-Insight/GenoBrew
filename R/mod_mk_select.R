@@ -651,8 +651,17 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
     mk_select_items$vcf_input <- vcf # store original VCF for reference
 
     updateProgressBar(session, "pb_mk_select", value = 50, title = "Loading VCF...")
-    result <- load_vcf_panel(panel_df = panel_df, vcf = vcf)
 
+    tryCatch(
+      {
+         result <- load_vcf_panel(panel_df = panel_df, vcf = vcf)
+      },
+      error = function(e) {
+        shinyalert("Error", e$message, type = "error")
+        return()
+      }
+    )
+    
     mk_select_items$vcf_common <- result$vcf # store common markers VCF for reference
 
     updateProgressBar(session, "pb_mk_select", value = 80, title = "Calculating marker stats...")

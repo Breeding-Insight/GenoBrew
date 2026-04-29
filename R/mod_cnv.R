@@ -826,9 +826,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
   output$baf_z_plot <- renderPlot({
     req(!is.null(cnv_items$click) | !is.null(cnv_items$updated_hmm_results) & !is.null(input$cnv_filter_samples_baf))
     updateProgressBar(session, "baf_z_plot_bar", value = 10, title = "CNV profile plot ready.")
-    print("click")
-    print(cnv_items$click)
-    print(input$cnv_filter_samples_baf)
+
     plot <- plot_cn_track(if(!is.null(cnv_items$updated_hmm_results) & is.null(cnv_items$click)) cnv_items$updated_hmm_results else cnv_items$hmm_CN, 
                           sample_id = input$cnv_filter_samples_baf,
                           summarized = input$summarize == "TRUE",
