@@ -509,6 +509,9 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
     cnv_data = NULL # data.frame: Qploidy HMM by-window
   )
 
+  # Track the sample selection used when marker_stats was last computed
+  last_filter_samples <- reactiveVal(NULL)
+
   output$vbox_wgs_markers <- renderValueBox({
     valueBox(
       value = mk_counts$wgs, subtitle = "VCF Markers",
@@ -671,7 +674,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
       bed_data = opt_files$bed_data,
       win_data = opt_files$cnv_data,
       dist_ploidy = as.numeric(input$dist_ploidy),
-      filter_samples = NULL
+      filter_samples = input$filter_samples
     )
 
     id_all <- paste0(mk_select_items$marker_stats$CHR, "_", mk_select_items$marker_stats$Position)
@@ -692,6 +695,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
     updatePickerInput(session, "filter_samples",
       choices = samples, selected = samples
     )
+    last_filter_samples(samples)
 
     updateProgressBar(session, "pb_mk_select", value = 100, title = "Done")
   })
@@ -740,7 +744,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
           bed_data = opt_files$bed_data,
           win_data = opt_files$cnv_data,
           dist_ploidy = as.numeric(input$dist_ploidy),
-          filter_samples = colnames(result$vcf@gt)[-1]
+          filter_samples = input$filter_samples
         )
       },
       error = function(e) {
@@ -767,6 +771,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
     updatePickerInput(session, "filter_samples",
       choices = samples, selected = samples
     )
+    last_filter_samples(samples)
 
     updateProgressBar(session, "pb_mk_select", value = 100, title = "Done")
   })
@@ -863,6 +868,28 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
   # --- Apply Filters -----------------------------------------------------------
   observeEvent(input$apply_filters, {
     req(!is.null(mk_select_items$marker_stats), !is.null(mk_select_items$marker_stats))
+
+    samples_changed <- !identical(sort(input$filter_samples), sort(last_filter_samples()))
+
+    if (samples_changed) {
+      updateProgressBar(session, "pb_mk_select", value = 10, title = "Recalculating marker stats...")
+      updateProgressBar(session, "pb_filters", value = 10, title = "Recalculating marker stats...")
+
+      mk_select_items$marker_stats <- get_stats_df(
+        vcf = mk_select_items$vcf_input,
+        bed_data = opt_files$bed_data,
+        win_data = opt_files$cnv_data,
+        dist_ploidy = as.numeric(input$dist_ploidy),
+        filter_samples = input$filter_samples
+      )
+
+      id_all <- paste0(mk_select_items$marker_stats$CHR, "_", mk_select_items$marker_stats$Position)
+      id_common <- paste0(mk_select_items$vcf_common@fix[, 1], "_", mk_select_items$vcf_common@fix[, 2])
+      idx <- which(id_all %in% id_common)
+      mk_select_items$common_marker_stats <- mk_select_items$marker_stats[idx, ]
+
+      last_filter_samples(input$filter_samples)
+    }
 
     updateProgressBar(session, "pb_mk_select", value = 25, title = "Applying filters...")
     updateProgressBar(session, "pb_filters", value = 25, title = "Applying filters...")

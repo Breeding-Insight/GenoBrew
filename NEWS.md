@@ -1,3 +1,8 @@
+# GenoBrew 0.1.0
+
+* re-run get_stats when different samples are selected
+* Add custom css and javascript
+
 # GenoBrew 0.0.5
 
 * Add help pages
