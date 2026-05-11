@@ -2,6 +2,7 @@
 
 * re-run get_stats when different samples are selected
 * Add custom css and javascript
+* Bugfix CNV compare image save
 
 # GenoBrew 0.0.5
 

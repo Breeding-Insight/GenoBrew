@@ -571,7 +571,8 @@ mod_cnv_server <- function(input, output, session, parent_session){
     passport_df = NULL,
     updated_hmm_results = NULL,
     click = NULL,
-    single_sample_plot = NULL
+    single_sample_plot = NULL,
+    samples_to_plot = NULL
   )
   
   # --- Reactive storage for dataset sample/family metadata ---
@@ -742,21 +743,21 @@ mod_cnv_server <- function(input, output, session, parent_session){
     }
 
     # Determine which tab is active for sample selection
-    samples_to_plot <- NULL
+    cnv_items$samples_to_plot <- NULL
     if (!is.null(input$sample_select_tabs) && input$sample_select_tabs == "by_family") {
       # Defensive: handle NULL or empty selection
       fam <- input$cnv_filter_families
       if (!is.null(fam) && length(fam) > 0 && !is.null(choices$sample_family_map[[fam]])) {
-        samples_to_plot <- choices$sample_family_map[[fam]]
+        cnv_items$samples_to_plot <- choices$sample_family_map[[fam]]
       } else {
-        samples_to_plot <- character(0)
+        cnv_items$samples_to_plot <- character(0)
       }
     } else {
-      samples_to_plot <- input$cnv_filter_samples
+      cnv_items$samples_to_plot <- input$cnv_filter_samples
     }
     
     plot <- compare_cn_track(cnv_items$hmm_CN, 
-                             samples_to_plot = samples_to_plot, 
+                             samples_to_plot = cnv_items$samples_to_plot, 
                              facet_nrow = 1,
                              gray_CN = input$gray_CN, 
                              add_het = input$add_heterozygosity == "TRUE",
@@ -979,7 +980,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
       } else {
         
         plot <- compare_cn_track(cnv_items$hmm_CN, 
-                                 samples_to_plot = samples_to_plot, 
+                                 samples_to_plot = cnv_items$samples_to_plot, 
                                  facet_nrow = 1,
                                  gray_CN = input$gray_CN, 
                                  add_het = input$add_heterozygosity == "TRUE",

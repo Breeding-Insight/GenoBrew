@@ -882,6 +882,9 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
         dist_ploidy = as.numeric(input$dist_ploidy),
         filter_samples = input$filter_samples
       )
+      
+      print("Filtered")
+      print(str(mk_select_items$marker_stats))
 
       id_all <- paste0(mk_select_items$marker_stats$CHR, "_", mk_select_items$marker_stats$Position)
       id_common <- paste0(mk_select_items$vcf_common@fix[, 1], "_", mk_select_items$vcf_common@fix[, 2])

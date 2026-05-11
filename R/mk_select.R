@@ -432,6 +432,11 @@ get_stats_df <- function(vcf, bed_data, win_data, dist_ploidy, filter_samples = 
       stop("Qploidy HMM_by_window file doesn't have the correct format.")
     }
     
+    # Filter win_data to selected samples only
+    if (!is.null(req_samples) && length(req_samples) > 0 && "Sample" %in% colnames(win)) {
+      win <- win[win$Sample %in% req_samples, ]
+    }
+
     # Convert to data.table for fast subsetting
     data.table::setDT(win)
     data.table::setkey(win, Chr, Start, End)
