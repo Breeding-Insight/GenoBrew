@@ -45,11 +45,12 @@ computes and displays:
 
 #### CNV Profiles
 
-Loads a CNV file (or built-in dataset) and visualizes:
+Loads `Qploidy2` output files (or built-in dataset) and visualizes:
+See more about `Qplody2` in its [repository](https://github.com/Breeding-Insight/Qploidy2/tree/main).
 
 - Genome-wide CNV profiles for combined samples
 - BAF, zscore and CNV calls plots for single sample
-- Pairwise IBD plots
+- Curation of results by re-running HMM for specific samples with user-defined parameters
 
 ### Getting Started
 

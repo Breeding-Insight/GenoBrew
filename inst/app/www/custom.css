@@ -1,5 +1,9 @@
 /* ── Custom Box Colors ── */
 
+/* ── Card header cursor ── */
+.card-header { cursor: pointer; }
+.card-tools  { cursor: default; }
+
 :root {
   --azure-core: #48A9C5;
   --azure-lite: #B5DDE8;
@@ -436,11 +440,6 @@
 }
 
 /* ── Ensure box collapse/expand buttons are always on top ── */
-.card-tools { 
-  position: relative; 
-  z-index: 10; 
-}
-
 /* Make collapse/expand icons visible on white box headers */
 .card-tools .btn-tool { 
   color: #495057 !important; 
@@ -448,4 +447,23 @@
 
 .card-tools .btn-tool:hover { 
   color: #212529 !important; 
+}
+
+/* ── Link to skip to main text for keyboard and screen reader nav ── */
+/* Hidden until focused on */
+.skip-link {
+  background: var(--azure-deep);
+  color: white;
+  font-weight: 700;
+  left: 50%;
+  padding: 4px;
+  position: fixed;
+  top: 0;
+  z-index: 9999;
+  transform: translateY(-150%);
+  transition: transform 0.3s;
+}
+
+.skip-link:focus {
+  transform: translateY(0%);
 }
