@@ -81,6 +81,14 @@ GenoBrew::run_app()
 
 Access GenoBrew tutorial [here](https://scribehow.com/viewer/GenoBrew_Interactive_Marker_Panel_Evaluation_CNV_Visualization_and_Curation__4uWloBuPT1WlnCvW2UWiTg).
 
+### How to cite
+
+If you use GenoBrew in research or breeding analyses, please cite it as:
+
+Taniguti, C. H.; Chinchilla-Vargas, J.; Casa, Alexandra. 
+GenoBrew: A user-friendly Shiny app for evaluating marker panel efficiency and visualizing CNV profiles
+RRID: SCR_028314
+
 ### Funding
 
 GenoBrew development is supported by
