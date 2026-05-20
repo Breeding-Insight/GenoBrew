@@ -1,3 +1,7 @@
+# GenoBrew 0.1.1
+
+* Changing dependency from Qploidy to Qploidy2
+
 # GenoBrew 0.1.0
 
 * re-run get_stats when different samples are selected

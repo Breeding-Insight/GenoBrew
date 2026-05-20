@@ -328,11 +328,11 @@ plot_marker_positions <- function(marker_stats,
 
 ##' Compute per-marker statistics for a VCF
 ##'
-##' Calculates per-marker statistics including MAF, mean depth, missingness, heterozygosity, repeated-region overlap, and CNV difference from ploidy, for a given vcfR object. Optionally annotates markers with repeat and CNV information using provided BED and Qploidy window data.
+##' Calculates per-marker statistics including MAF, mean depth, missingness, heterozygosity, repeated-region overlap, and CNV difference from ploidy, for a given vcfR object. Optionally annotates markers with repeat and CNV information using provided BED and Qploidy2 window data.
 ##'
 ##' @param vcf A vcfR object containing genotype data.
 ##' @param bed_data Optional. A data.frame or data.table with columns chrom, start, end, representing repeated regions (BED format). Used to annotate markers as in repeats.
-##' @param win_data Optional. A data.frame or data.table with columns Sample, Chr, Start, End, CN_call, as produced by Qploidy HMM window output. Used to annotate markers with percentage of samples with CNV different from ploidy.
+##' @param win_data Optional. A data.frame or data.table with columns Sample, Chr, Start, End, CN_call, as produced by Qploidy2 HMM window output. Used to annotate markers with percentage of samples with CNV different from ploidy.
 ##' @param dist_ploidy Integer. The reference ploidy level for CNV comparison (default 2 if NULL).
 ##' @param filter_samples Optional character vector of sample names to include in the statistics calculation. If NULL, all samples in the VCF are used.
 ##'
@@ -429,7 +429,7 @@ get_stats_df <- function(vcf, bed_data, win_data, dist_ploidy, filter_samples = 
     win        <- as.data.frame(win_data)[, req_cols[req_cols %in% colnames(win_data)]]
     
     if (!all(req_cols %in% colnames(win))) {
-      stop("Qploidy HMM_by_window file doesn't have the correct format.")
+      stop("Qploidy2 HMM_by_window file doesn't have the correct format.")
     }
     
     # Filter win_data to selected samples only

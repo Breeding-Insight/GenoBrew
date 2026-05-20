@@ -118,12 +118,12 @@ mod_mk_select_ui <- function(id) {
                 )
               )
             ),
-            # Row 4: Qploidy HMM window (optional)
+            # Row 4: Qploidy2 HMM window (optional)
             fluidRow(
               column(
                 width = 6,
                 fileInput(ns("qploidy_window_file"),
-                  label = HTML("Qploidy HMM Results by Window <small style='color:grey;font-weight:normal'>(.csv, .gz) <em>optional</em></small>"),
+                  label = HTML("Qploidy2 HMM Results by Window <small style='color:grey;font-weight:normal'>(.csv, .gz) <em>optional</em></small>"),
                   accept = c(".csv", ".gz"),
                   width = "80%"
                 ),
@@ -135,7 +135,7 @@ mod_mk_select_ui <- function(id) {
               column(width = 1),
               column(
                 width = 5,
-                tags$label(HTML("Choose a built-in Qploidy HMM file <small style='color:grey;font-weight:normal'><em>optional</em></small>")),
+                tags$label(HTML("Choose a built-in Qploidy2 HMM file <small style='color:grey;font-weight:normal'><em>optional</em></small>")),
                 selectInput(
                   ns("builtin_qploidy_window"),
                   label = NULL,
@@ -506,7 +506,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
   # --- Optional annotation file storage ---
   opt_files <- reactiveValues(
     bed_data = NULL, # data.table: chrom/start/end
-    cnv_data = NULL # data.frame: Qploidy HMM by-window
+    cnv_data = NULL # data.frame: Qploidy2 HMM by-window
   )
 
   # Track the sample selection used when marker_stats was last computed
@@ -599,16 +599,16 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
     )
   })
 
-  # --- Optional: load Qploidy HMM window CSV (uploaded file) ------------------
+  # --- Optional: load Qploidy2 HMM window CSV (uploaded file) ------------------
   observeEvent(input$mk_select_start, {
     req(!is.null(input$qploidy_window_file) | input$qploidy_window_file$datapath != "")
-    updateProgressBar(session, "pb_mk_select", value = 20, title = "Loading Qploidy HMM window CSV...")
+    updateProgressBar(session, "pb_mk_select", value = 20, title = "Loading Qploidy2 HMM window CSV...")
     opt_files$cnv_data <- as.data.frame(
       fread(input$qploidy_window_file$datapath, showProgress = FALSE)
     )
   })
 
-  # --- Optional: load Qploidy HMM window CSV (built-in) -----------------------
+  # --- Optional: load Qploidy2 HMM window CSV (built-in) -----------------------
   observeEvent(input$load_dataset, {
     req(input$builtin_qploidy_window != "")
     key <- input$builtin_qploidy_window
@@ -616,7 +616,7 @@ mod_mk_select_server <- function(input, output, session, parent_session) {
       opt_files$cnv_data <- NULL
       return()
     }
-    updateProgressBar(session, "pb_mk_select", value = 20, title = "Loading Qploidy HMM window CSV...")
+    updateProgressBar(session, "pb_mk_select", value = 20, title = "Loading Qploidy2 HMM window CSV...")
 
     path <- builtin_qploidy_window_paths[[key]]
     req(file.exists(path) | grepl("^https?://", path))

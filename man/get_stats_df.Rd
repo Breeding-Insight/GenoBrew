@@ -11,7 +11,7 @@ get_stats_df(vcf, bed_data, win_data, dist_ploidy, filter_samples = NULL)
 
 \item{bed_data}{Optional. A data.frame or data.table with columns chrom, start, end, representing repeated regions (BED format). Used to annotate markers as in repeats.}
 
-\item{win_data}{Optional. A data.frame or data.table with columns Sample, Chr, Start, End, CN_call, as produced by Qploidy HMM window output. Used to annotate markers with percentage of samples with CNV different from ploidy.}
+\item{win_data}{Optional. A data.frame or data.table with columns Sample, Chr, Start, End, CN_call, as produced by Qploidy2 HMM window output. Used to annotate markers with percentage of samples with CNV different from ploidy.}
 
 \item{dist_ploidy}{Integer. The reference ploidy level for CNV comparison (default 2 if NULL).}
 
@@ -21,5 +21,5 @@ get_stats_df(vcf, bed_data, win_data, dist_ploidy, filter_samples = NULL)
 A data.frame with per-marker statistics: CHR, Position, MarkerID, MAF, MeanDP, Pct_Missing, Pct_Het, and optionally Pct_CNV_diff_ploidy and In_Repeats.
 }
 \description{
-Calculates per-marker statistics including MAF, mean depth, missingness, heterozygosity, repeated-region overlap, and CNV difference from ploidy, for a given vcfR object. Optionally annotates markers with repeat and CNV information using provided BED and Qploidy window data.
+Calculates per-marker statistics including MAF, mean depth, missingness, heterozygosity, repeated-region overlap, and CNV difference from ploidy, for a given vcfR object. Optionally annotates markers with repeat and CNV information using provided BED and Qploidy2 window data.
 }
