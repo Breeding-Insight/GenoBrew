@@ -53,7 +53,8 @@ mod_cnv_ui <- function(id){
                                     "<a href='https://Breeding-Insight/Qploidy2/' target='_blank'>Qploidy2 documentation</a>",
                                     " for details.</span>"
                                   ))
-                              )
+                              ),
+                              tags$span("* Required files for CNV visualization and analysis in GenoBrew.", style = "font-size:10px;"), br()
                        ),
                        column(width = 1),
                        column(width = 6,
@@ -64,7 +65,7 @@ mod_cnv_ui <- function(id){
                      fluidRow(
                        column(width = 5,
                               fileInput(ns("cnv_file_marker"),
-                                        label = HTML("HMM Results by Marker <small style='color:grey;font-weight:normal'>(<em>_by_marker.csv</em>)</small>"),
+                                        label = HTML("HMM Results by Marker* <small style='color:grey;font-weight:normal'>(<em>_by_marker.csv</em>)</small>"),
                                         accept = c(".csv", ".gz"), width = "80%")
                        ),
                        column(width = 1),
@@ -83,7 +84,7 @@ mod_cnv_ui <- function(id){
                      fluidRow(
                        column(width = 5,
                               fileInput(ns("cnv_file_window"),
-                                        label = HTML("HMM Results by Window <small style='color:grey;font-weight:normal'>(<em>_by_window.csv</em>)</small>"),
+                                        label = HTML("HMM Results by Window* <small style='color:grey;font-weight:normal'>(<em>_by_window.csv</em>)</small>"),
                                         accept = c(".csv", ".gz"), width = "80%")
                        ),
                        column(width = 1),
@@ -93,7 +94,7 @@ mod_cnv_ui <- function(id){
                      fluidRow(
                        column(width = 5,
                               fileInput(ns("cnv_file_params"),
-                                        label = HTML("HMM Parameters <small style='color:grey;font-weight:normal'>(<em>_params.rds</em>)</small>"),
+                                        label = HTML("HMM Parameters* <small style='color:grey;font-weight:normal'>(<em>_params.rds</em>)</small>"),
                                         accept = c(".rds"), width = "80%")
                        ),
                        column(width = 1),
@@ -191,72 +192,7 @@ mod_cnv_ui <- function(id){
              box(
                title = "Select Samples", status = "info", solidHeader = TRUE,
                icon = icon("users"), width = 12, collapsible = TRUE, collapsed = FALSE,
-               tabsetPanel(
-                 id = ns("sample_select_tabs"),
-                 type = "tabs",
-                 tabPanel(
-                   title = tagList(icon("user"), " By Sample"), 
-                   value = "by_sample",
-                   br(),
-                   fluidRow(
-                     column(width = 12,
-                            pickerInput(
-                              ns("cnv_filter_samples"),
-                              label   = NULL,
-                              choices = NULL,
-                              selected = NULL,
-                              multiple = TRUE,
-                              options  = pickerOptions(
-                                actionsBox            = TRUE,
-                                liveSearch            = TRUE,
-                                liveSearchPlaceholder = "Search samples...",
-                                selectedTextFormat    = "count > 3",
-                                countSelectedText     = "{0} of {1} samples selected",
-                                noneSelectedText      = "No samples selected",
-                                selectAllText         = "Select All",
-                                deselectAllText       = "Deselect All",
-                                size = 12
-                              ),
-                              width = "100%"
-                            ),
-                            helpText("All samples are selected by default. Deselect to exclude from plots.")
-                     )
-                   )
-                 ),
-                 tabPanel(
-                   title = tagList(icon("sitemap"), " By Family"),
-                   value = "by_family",
-                   br(),
-                   fluidRow(
-                     column(width = 6,
-                            pickerInput(
-                              ns("cnv_filter_families"),
-                              label   = tags$label("Select families", style = "font-weight:bold"),
-                              choices  = NULL,
-                              selected = NULL,
-                              multiple = FALSE,
-                              options  = pickerOptions(
-                                actionsBox            = TRUE,
-                                liveSearch            = TRUE,
-                                liveSearchPlaceholder = "Search families...",
-                                selectedTextFormat    = "count > 3",
-                                countSelectedText     = "{0} of {1} families selected",
-                                noneSelectedText      = "No families selected",
-                                selectAllText         = "Select All",
-                                deselectAllText       = "Deselect All",
-                                size = 12
-                              ),
-                              width = "100%"
-                            ),
-                            helpText("Selecting a family will include all samples belonging to it.")
-                     ),
-                     column(width = 6,
-                            tags$label("Samples in selected families", style = "font-weight:bold"),
-                            verbatimTextOutput(ns("cnv_family_sample_preview"))
-                     )
-                   )
-                 )
-               ), br(),
+               uiOutput(ns("sample_tabs_ui")), br(),
                # --- CNV profile ---
                box(
                  title = "CNV Profile", status = "info", solidHeader = FALSE,
@@ -704,6 +640,86 @@ mod_cnv_server <- function(input, output, session, parent_session){
     paste(paste0(relat, "-",sel), collapse = "\n")
   })
   
+  output$sample_tabs_ui <- renderUI({
+    by_sample_tab <- tabPanel(
+      title = tagList(icon("user"), " By Sample"),
+      value = "by_sample",
+      br(),
+      fluidRow(
+        column(width = 12,
+               pickerInput(
+                 ns("cnv_filter_samples"),
+                 label   = NULL,
+                 choices = NULL,
+                 selected = NULL,
+                 multiple = TRUE,
+                 options  = pickerOptions(
+                   actionsBox            = TRUE,
+                   liveSearch            = TRUE,
+                   liveSearchPlaceholder = "Search samples...",
+                   selectedTextFormat    = "count > 3",
+                   countSelectedText     = "{0} of {1} samples selected",
+                   noneSelectedText      = "No samples selected",
+                   selectAllText         = "Select All",
+                   deselectAllText       = "Deselect All",
+                   size = 12
+                 ),
+                 width = "100%"
+               ),
+               helpText("All samples are selected by default. Deselect to exclude from plots.")
+        )
+      )
+    )
+
+    if (!is.null(cnv_items$passport_df)) {
+      by_family_tab <- tabPanel(
+        title = tagList(icon("sitemap"), " By Family"),
+        value = "by_family",
+        br(),
+        fluidRow(
+          column(width = 6,
+                 pickerInput(
+                   ns("cnv_filter_families"),
+                   label   = tags$label("Select families", style = "font-weight:bold"),
+                   choices  = NULL,
+                   selected = NULL,
+                   multiple = FALSE,
+                   options  = pickerOptions(
+                     actionsBox            = TRUE,
+                     liveSearch            = TRUE,
+                     liveSearchPlaceholder = "Search families...",
+                     selectedTextFormat    = "count > 3",
+                     countSelectedText     = "{0} of {1} families selected",
+                     noneSelectedText      = "No families selected",
+                     selectAllText         = "Select All",
+                     deselectAllText       = "Deselect All",
+                     size = 12
+                   ),
+                   width = "100%"
+                 ),
+                 helpText("Selecting a family will include all samples belonging to it.")
+          ),
+          column(width = 6,
+                 tags$label("Samples in selected families", style = "font-weight:bold"),
+                 verbatimTextOutput(ns("cnv_family_sample_preview"))
+          )
+        )
+      )
+      tabsetPanel(
+        id = ns("sample_select_tabs"),
+        type = "tabs",
+        by_sample_tab,
+        by_family_tab
+      )
+    } else {
+      tabsetPanel(
+        id = ns("sample_select_tabs"),
+        type = "tabs",
+        by_sample_tab
+      )
+    }
+  })
+
   observe({
     req(cnv_items$hmm_CN)
     updateProgressBar(session, "pb_cnv", value = 100, title = "Updating sample picker choices...")

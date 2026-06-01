@@ -1,3 +1,7 @@
+# GenoBrew 0.1.2
+
+* Make passport file optional for CNV profile tab
+
 # GenoBrew 0.1.1
 
 * Changing dependency from Qploidy to Qploidy2
