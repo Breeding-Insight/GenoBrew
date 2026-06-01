@@ -385,11 +385,11 @@ mod_cnv_ui <- function(id){
                             
                             fluidRow(
                               column(6,
-                                     numericInput(ns("baf_weight"), 
-                                                  label = "BAF weight", 
-                                                  min = 0,
-                                                  value = NULL,
-                                                  width = "70%"
+                                     textInput(ns("baf_weight"),
+                                               label = "BAF weight",
+                                               value = "",
+                                               placeholder = "default: 0.5",
+                                               width = "70%"
                                      )
                               ),
                               column(6,
@@ -402,6 +402,33 @@ mod_cnv_ui <- function(id){
                                        status   = "info",
                                        width = "70%"
                                      )
+                              )
+                            ),
+
+                            fluidRow(
+                              column(6,
+                                     textInput(ns("transition_jump"),
+                                               label = "Transition jump",
+                                               value = "",
+                                               placeholder = "default: 0.995",
+                                               width = "70%")
+                              ),
+                              column(6,
+                                     textInput(ns("min_het_frac"),
+                                               label = "Minimum heterozygous fraction",
+                                               value = "",
+                                               placeholder = "default: 0.05",
+                                               width = "70%")
+                              )
+                            ),
+
+                            fluidRow(
+                              column(6,
+                                     textInput(ns("dosage_threshold"),
+                                               label = "Dosage threshold",
+                                               value = "",
+                                               placeholder = "default: 0.6",
+                                               width = "70%")
                               )
                             ),
                             column(width = 12,
@@ -876,7 +903,10 @@ mod_cnv_server <- function(input, output, session, parent_session){
       exp_ploidy = if(is.na(input$exp_ploidy) | is.null(input$exp_ploidy) | input$exp_ploidy == "") NA else as.numeric(input$exp_ploidy),
       baf_weight = if(is.na(input$baf_weight) | is.null(input$baf_weight) | input$baf_weight == "") 0.5 else as.numeric(input$baf_weight),
       z_only = if(is.na(input$z_only) | is.null(input$z_only) | input$z_only == "") FALSE else input$z_only == "TRUE",
-      cn_grid = if (is.na(input$cn_grid) | is.null(input$cn_grid) | input$cn_grid == "") 2:6 else as.numeric(unlist(strsplit(input$cn_grid, ",")))
+      cn_grid = if (is.na(input$cn_grid) | is.null(input$cn_grid) | input$cn_grid == "") 2:6 else as.numeric(unlist(strsplit(input$cn_grid, ","))),
+      transition_jump = if(is.na(input$transition_jump) | is.null(input$transition_jump) | input$transition_jump == "") 0.995 else as.numeric(input$transition_jump),
+      min_het_frac = if(is.na(input$min_het_frac) | is.null(input$min_het_frac) | input$min_het_frac == "") 0.05 else as.numeric(input$min_het_frac),
+      dosage_threshold = if(is.na(input$dosage_threshold) | is.null(input$dosage_threshold) | input$dosage_threshold == "") 0.6 else as.numeric(input$dosage_threshold)
     )
     
     # Store updated results in reactiveValues for later use

@@ -1,6 +1,7 @@
 # GenoBrew 0.1.2
 
 * Make passport file optional for CNV profile tab
+* add more parameters to re-estimate HMM
 
 # GenoBrew 0.1.1
 
