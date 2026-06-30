@@ -1,6 +1,28 @@
+# GenoBrew 0.1.2
+
+* Make passport file optional for CNV profile tab
+* add more parameters to re-estimate HMM
+
+# GenoBrew 0.1.1
+
+* Changing dependency from Qploidy to Qploidy2
+
+# GenoBrew 0.1.0
+
+* re-run get_stats when different samples are selected
+* Add custom css and javascript
+* Bugfix CNV compare image save
+
+# GenoBrew 0.0.5
+
+* Add help pages
+* Add input checks with shinyalert messages
+
 # GenoBrew 0.0.4
 
 * Add box to edit specific samples CNV estimations and replace/drop in the main dataset
+* Add tutorial link
+* Add shinyapps.io github action deployment
 
 # GenoBrew 0.0.3
 

@@ -100,7 +100,7 @@ mod_Home_ui <- function(id){
                  style = "text-decoration: none; color: inherit;"
                ),
                a(
-                 href = "file:///Users/cht47/Documents/github/GenoBrew/doc/GenoBrew.html",
+                 href = "https://scribehow.com/viewer/GenoBrew_Interactive_Marker_Panel_Evaluation_CNV_Visualization_and_Curation__4uWloBuPT1WlnCvW2UWiTg",
                  target = "_blank",
                  valueBox(
                    value = NULL,
@@ -116,12 +116,12 @@ mod_Home_ui <- function(id){
                  title = "Try the Breedverse!", status = "warning", solidHeader = TRUE, width = 11, collapsible = FALSE,
                  HTML(
                    "We developed an R shiny interface where you can use ALL of our Breeding Insight applications in a single location. This
-                   includes applications like BIGapp, Qploidy, and Allomate, PLUS all of our newly released applications.
+                   includes applications like BIGapp, GenoBrew, and Allomate, PLUS all of our newly released applications.
                    
-                   Learn more and see install instructions here
+                   <a href='https://github.com/Breeding-Insight/Breedverse' target='_blank'>Learn more and see install instructions here</a>
             
                     <div style='text-align: center; margin-top: 20px;'>
-                      <img src='www/BreedingInsight.png' alt='Breeding Insight' style='width: 85px; height: 85px;'>
+                      <img src='www/breedverse_logo.png' alt='BreedVerse' style='width: 120px; height: 140px;'>
                     </div>"
                  ),
                  style = "overflow-y: auto; height: 300px"

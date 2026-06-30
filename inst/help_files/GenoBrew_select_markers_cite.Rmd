@@ -1,0 +1,16 @@
+---
+title: "GenoBrew_selected_markers_cite"
+output: html_document
+---
+
+* **Citation Guidelines**
+
+Thank you for using GenoBrew! Please cite in your 
+publications as follows:
+
+Taniguti, C. H., Chinchilla-Vargas, J.; Casa, A. M. <br>
+GenoBrew: Interactive Marker Panel Evaluation and CNV Visualization <br>
+RRID: SCR_028314
+
+
+

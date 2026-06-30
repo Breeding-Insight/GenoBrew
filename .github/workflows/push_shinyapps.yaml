@@ -10,35 +10,37 @@ jobs:
     
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup R
-      uses: r-lib/actions/setup-r@v2
+    - uses: r-lib/actions/setup-r@v2
       with:
-        r-version: '4.3.0'
+        r-version: '4.3.3'
         
     - name: Setup pandoc
       uses: r-lib/actions/setup-pandoc@v2
       
-    - name: Install system dependencies
+    - name: Install BiocManager and basic packages
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libharfbuzz-dev libfribidi-dev
-        
-    - name: Cache R packages
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.R_LIBS_USER }}
-        key: ${{ runner.os }}-r-${{ hashFiles('DESCRIPTION') }}
-        restore-keys: ${{ runner.os }}-r-
-        
-    - name: Install dependencies
-      run: |
-        install.packages(c("remotes", "rsconnect"))
-        remotes::install_deps(dependencies = TRUE)
+        install.packages(c("BiocManager", "remotes", "rsconnect"))
+        BiocManager::install(ask = FALSE, update = FALSE)
+        BiocManager::install("multtest", ask = FALSE, update = FALSE)
       shell: Rscript {0}
+      
+    - name: Install GitHub remotes first
+      run: |
+        # Install the GitHub remote separately to avoid timeout issues
+        remotes::install_github("Cristianetaniguti/Qploidy@development", dependencies = TRUE)
+      shell: Rscript {0}
+      
+    - uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        extra-packages: |
+          any::rsconnect
+        needs: |
+          rsconnect
       
     - name: Install package
       run: R CMD INSTALL .
@@ -53,6 +55,15 @@ jobs:
         
         rsconnect::deployApp(
           appDir = ".",
-          forceUpdate = TRUE
+          appFiles = c(
+            "R/",
+            "inst/",
+            "DESCRIPTION",
+            "NAMESPACE", 
+            "app.R"
+          ),
+          appName = "genobrew",
+          forceUpdate = TRUE,
+          lint = FALSE
         )
       shell: Rscript {0}

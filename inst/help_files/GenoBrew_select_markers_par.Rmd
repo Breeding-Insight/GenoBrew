@@ -1,0 +1,71 @@
+---
+title: "GenoBrew_select_markers_par"
+output: html_document
+---
+
+### **VCF**
+
+Variant Call Format (VCF) files must contain genotype (GT) and allele depth (AD) fields. 
+GenoBrew extracts marker, sample, allele counts, and computes ratios. The file should have a 
+standard VCF header, with sample columns and GT:AD values for each marker/sample.
+
+Example (first 6 rows):
+```vcf
+##fileformat=VCFv4.2
+##source=simulated
+#CHROM POS ID REF ALT QUAL FILTER INFO FORMAT Sample1 Sample2
+chr1 100 . A G . PASS . GT:AD 0/0:10,0 0/1:5,5
+chr1 200 . T C . PASS . GT:AD 0/1:7,3 1/1:0,10
+chr1 300 . G A . PASS . GT:AD 1/1:0,12 0/0:11,0
+chr1 400 . C T . PASS . GT:AD 0/0:8,0 0/1:4,6
+chr1 500 . A C . PASS . GT:AD 0/1:6,4 1/1:0,9
+```
+
+### **Marker Panel CSV**
+
+SNP panel file (CSV) with marker information, including columns marker IDs, 
+chromosome, position, alleles, and possibly annotation columns. Example:
+
+```tsv
+SNP.ID	Chromosome	Position	REF	ALT
+chr1_13439	chr1	13439	A	G
+chr1_22731	chr1	22731	A	G
+```
+
+### **Repeat Intervals**
+
+BED-like table (TSV, gzipped) listing intervals of repetitive regions in the reference genome, 
+used for filtering or annotation. Example:
+
+```tsv
+chrom   start   end
+chr10  9       293
+chr10  303     486
+chr10  493     604
+chr10  609     698
+```
+
+### **Qploidy2 HMM Results by Window**
+
+One of the files produced by Qploidy2 function `write_hmm_CN()`. It is the result from HMM-based copy 
+number estimates summarized in genomic windows (e.g., 100kb or 1Mb bins). 
+Columns include:
+
+- **Sample**: Identifier for the sample
+- **Chr**: Chromosome name
+- **WindowID**: Unique identifier for the genomic window
+- **Start**: Start position of the window in base pairs
+- **End**: End position of the window in base pairs
+- **n_snps**: Number of SNPs within the window
+- **n_het**: Number of heterozygous SNPs within the window
+- **z**: Z-score for the window
+- **w_baf**: B-allele frequency HMM weight for the window
+- **CN_call**: Copy number call for the window
+- **post_max**: Maximum posterior probability for the copy number call
+- **post_CN1**: Posterior probability for copy number 1
+- **post_CN2**: Posterior probability for copy number 2
+- **post_CN3**: Posterior probability for copy number 3
+- **post_CN4**: Posterior probability for copy number 4
+- **post_CN5**: Posterior probability for copy number 5
+- **post_CN6**: Posterior probability for copy number 6
+
