@@ -224,6 +224,10 @@ mod_cnv_ui <- function(id){
                             inline   = TRUE,
                             status   = "info"
                           )
+                   ),
+                   column(width = 3,
+                          numericInput(ns("n_cores"), label = "Number of cores",
+                                       value = 1L, min = 1L, step = 1L, width = "50%")
                    )
                  ),
                  column(width = 6,
@@ -768,7 +772,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     if(input$add_heterozygosity == "TRUE") {
       updateProgressBar(session, "cnv_plot", value = 50, title = "Calling dosages for heterozygosity estimation...")
       
-      call_hmm_dosages(cnv_items$hmm_CN, bw = 0.15, dist = "gaussian", add_uniform = FALSE, uniform_weight = 0.01)
+      call_hmm_dosages(cnv_items$hmm_CN, bw = 0.15, dist = "gaussian", add_uniform = FALSE, uniform_weight = 0.01, n.cores = input$n_cores)
     } else NULL
   })
   
