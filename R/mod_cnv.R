@@ -224,6 +224,10 @@ mod_cnv_ui <- function(id){
                             inline   = TRUE,
                             status   = "info"
                           )
+                   ),
+                   column(width = 3,
+                          numericInput(ns("n_cores"), label = "Number of cores",
+                                       value = 1L, min = 1L, step = 1L, width = "50%")
                    )
                  ),
                  column(width = 6,
@@ -256,14 +260,22 @@ mod_cnv_ui <- function(id){
                                 sliderInput(ns("cnv_image_res"), "Resolution", value = 300, min = 50, max = 1000, step = 50),
                                 sliderInput(ns("cnv_image_width"), "Width", value = 10, min = 1, max = 20, step = 0.5),
                                 sliderInput(ns("cnv_image_height"), "Height", value = 6, min = 1, max = 20, step = 0.5),
-                                downloadButton(ns("download_cnv_plot"), "Save Image"),
+                                downloadButton(ns("download_cnv_plot"), "Save Image",
+                                              onclick = "event.stopPropagation();"),
                                 circle = FALSE, status = "danger",
                                 icon = icon("floppy-disk"), width = "300px", label = "Save",
                                 tooltip = tooltipOptions(title = "Save CNV Compare plot")
                               )
                           )
                    )
-                 )
+                 ),
+                                             fluidRow(
+                              column(width = 12,
+                                     progressBar(id = ns("save_image_bar"), value = 0,
+                                                 title = "", display_pct = FALSE,
+                                                 status = "info", striped = TRUE)
+                              )
+                            )
                ), br(),
                box(
                  title = "BAF and Z-scores", status = "info", solidHeader = FALSE,
@@ -488,7 +500,8 @@ mod_cnv_ui <- function(id){
                                 sliderInput(ns("baf_image_res"), "Resolution", value = 300, min = 50, max = 1000, step = 50),
                                 sliderInput(ns("baf_image_width"), "Width", value = 10, min = 1, max = 20, step = 0.5),
                                 sliderInput(ns("baf_image_height"), "Height", value = 6, min = 1, max = 20, step = 0.5),
-                                downloadButton(ns("download_baf_plot"), "Save Image"),
+                                downloadButton(ns("download_baf_plot"), "Save Image",
+                                                                              onclick = "event.stopPropagation();"),
                                 circle = FALSE, status = "danger",
                                 icon = icon("floppy-disk"), width = "300px", label = "Save",
                                 tooltip = tooltipOptions(title = "Save CNV plot")
@@ -768,7 +781,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
     if(input$add_heterozygosity == "TRUE") {
       updateProgressBar(session, "cnv_plot", value = 50, title = "Calling dosages for heterozygosity estimation...")
       
-      call_hmm_dosages(cnv_items$hmm_CN, bw = 0.15, dist = "gaussian", add_uniform = FALSE, uniform_weight = 0.01)
+      call_hmm_dosages(cnv_items$hmm_CN, bw = 0.15, dist = "gaussian", add_uniform = FALSE, uniform_weight = 0.01, n.cores = input$n_cores)
     } else NULL
   })
   
@@ -822,31 +835,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
   output$cnv_compare_plot_ui <- renderUI({
     plotlyOutput(ns("cnv_compare_plotly"), height = "600px")
   })
-  
-  # Simple ggplot click handler - manual coordinate detection
-  # observeEvent(input$cnv_plot_click, {
-  #   if (!is.null(input$cnv_plot_click)) {
-  #     tryCatch({
-  #       data <- cnv_profile()@data
-  #       click_y <- input$cnv_plot_click$y
-  #       
-  #       # Get unique samples and their order (bottom to top)
-  #       samples <- unique(data$Sample)
-  #       sample_levels <- rev(samples)  # reversed because ggplot plots bottom to top
-  #       
-  #       # Find which sample was clicked based on y coordinate
-  #       sample_index <- round(click_y)
-  #       
-  #       if (sample_index >= 1 && sample_index <= length(sample_levels)) {
-  #         clicked_sample <- sample_levels[sample_index]
-  #         updatePickerInput(session, "cnv_filter_samples_baf", selected = as.character(clicked_sample))
-  #       }
-  #     }, error = function(e) {
-  #       # Silently handle errors
-  #     })
-  #   }
-  # })
-  
+    
   # Plotly click handler - try different event source
   observeEvent(event_data("plotly_click"), {
     click_data <- event_data("plotly_click")
@@ -864,6 +853,46 @@ mod_cnv_server <- function(input, output, session, parent_session){
       })
     }
   })
+
+    # Download handler for CNV plot
+    output$download_cnv_plot <- downloadHandler(
+      filename = function() {
+        paste0("CNV_Plot_", Sys.Date(), ".", input$cnv_image_type)
+      },
+      content = function(file) {
+        print("Download triggered!")
+        updateProgressBar(session, "save_image_bar", value = 10, title = "Saving image...")
+
+        if (input$cnv_image_type == "html") {
+          updateProgressBar(session, "save_image_bar", value = 20, title = "Saving image to HTML...")
+          htmlwidgets::saveWidget(cnv_profile(), file)
+
+        } else {
+          updateProgressBar(session, "save_image_bar", value = 30, title = "Saving image to file...")
+          
+          # Re-generate as static ggplot (without interactive = TRUE)
+          p_static <- compare_cn_track(
+            cnv_items$hmm_CN,
+            samples_to_plot = cnv_items$samples_to_plot,
+            facet_nrow = 1,
+            gray_CN = input$gray_CN,
+            add_het = input$add_heterozygosity == "TRUE",
+            hmm_dosage_calls = dosages(),
+            interactive = FALSE  # <-- key change
+          )
+          
+          ggsave(
+            filename = file,
+            plot = p_static,
+            device = input$cnv_image_type,
+            dpi = input$cnv_image_res,
+            width = input$cnv_image_width,
+            height = input$cnv_image_height
+          )
+        }
+        updateProgressBar(session, "save_image_bar", value = 100, title = "Done!")
+      }
+    )
   
   ######
   
@@ -1013,37 +1042,7 @@ mod_cnv_server <- function(input, output, session, parent_session){
       download.file(url, file, mode = "wb")
     }
   )
-  
-  # Download handler for CNV plot
-  output$download_cnv_plot <- downloadHandler(
-    filename = function() {
-      paste("CNV_Plot", Sys.Date(), ".", input$cnv_image_type, sep = "")
-    },
-    content = function(file) {
-      req(cnv_profile())
-      if(input$cnv_image_type == "html") {
-        htmlwidgets::saveWidget(cnv_profile(), file)
-      } else {
-        
-        plot <- compare_cn_track(cnv_items$hmm_CN, 
-                                 samples_to_plot = cnv_items$samples_to_plot, 
-                                 facet_nrow = 1,
-                                 gray_CN = input$gray_CN, 
-                                 add_het = input$add_heterozygosity == "TRUE",
-                                 hmm_dosage_calls = dosages(),
-                                 interactive = FALSE)
-        ggsave(
-          filename = file,
-          plot = plot,
-          device = input$cnv_image_type,
-          dpi = input$cnv_image_res,
-          width = input$cnv_image_width,
-          height = input$cnv_image_height
-        )
-      }
-    }
-  )
-  
+    
   # Download handler for BAF and Z-scores plot
   output$download_baf_plot <- downloadHandler(
     filename = function() {
